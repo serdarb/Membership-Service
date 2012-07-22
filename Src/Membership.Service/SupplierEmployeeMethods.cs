@@ -39,7 +39,7 @@ namespace Membership.Service
 
 
 
-        public bool ChangePasswordForSupplierEmployee(string email)
+        public bool ChangePasswordForSupplierEmployee(string email, string newPasswordHash)
         {
             throw new NotImplementedException();
         }

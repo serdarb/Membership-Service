@@ -37,11 +37,11 @@ namespace Membership.Contract
         bool RequestPasswordResetForSupplierEmployee(string email);
 
         [OperationContract]
-        bool ChangePasswordForUser(string email);
+        bool ChangePasswordForUser(string email, string newPasswordHash);
         [OperationContract]
-        bool ChangePasswordForEmployee(string email);
+        bool ChangePasswordForEmployee(string email, string newPasswordHash);
         [OperationContract]
-        bool ChangePasswordForSupplierEmployee(string email);
+        bool ChangePasswordForSupplierEmployee(string email, string newPasswordHash);
 
         [OperationContract]
         bool AddAddress(AddressDto dto);

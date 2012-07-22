@@ -23,14 +23,14 @@ namespace Membership.Service
             throw new NotImplementedException();
         }
 
-      
+
 
         public bool RequestPasswordResetForEmployee(string email)
         {
             throw new NotImplementedException();
         }
 
-        public bool ChangePasswordForEmployee(string email)
+        public bool ChangePasswordForEmployee(string email, string newPasswordHash)
         {
             throw new NotImplementedException();
         }

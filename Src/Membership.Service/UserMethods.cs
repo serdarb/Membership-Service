@@ -180,18 +180,40 @@ namespace Membership.Service
             return false;
         }
 
-
-
         public bool RequestPasswordResetForUser(string email)
         {
             throw new NotImplementedException();
         }
 
-
-
-        public bool ChangePasswordForUser(string email)
+        public bool ChangePasswordForUser(string email, string newPasswordHash)
         {
-            throw new NotImplementedException();
+            if (DoesUserEmailExists(email))
+            {
+                var db = new MembershipDB();
+                var user = db.Users.First(x => x.Email == email);
+                if (user != null)
+                {
+                    user.PasswordHash = newPasswordHash;
+                    user.LastUpdatedBy = user.Id;
+                    user.UpdatedOn = DateTime.Now;
+
+                    db.SaveChanges();
+
+                    var userAssembler = new UserAssembler();
+
+                    _lockUserDictionary.EnterWriteLock();
+                    UserDictionary[email] = userAssembler.Assemble(user);
+                    _lockUserDictionary.ExitWriteLock();
+
+                    _lockUserLoginDictionary.EnterWriteLock();
+                    UserLoginDictionary[email] = newPasswordHash;
+                    _lockUserLoginDictionary.ExitWriteLock();
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
