@@ -38,5 +38,8 @@ namespace Membership.Data
 
         public Gender Gender { get; set; }
         public int? GenderId { get; set; }
+
+        public DateTime? PasswordResetRequestedOn { get; set; }
+        public string PasswordResetToken { get; set; }
     }
 }

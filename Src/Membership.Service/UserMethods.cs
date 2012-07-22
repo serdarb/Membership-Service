@@ -182,7 +182,27 @@ namespace Membership.Service
 
         public bool RequestPasswordResetForUser(string email)
         {
-            throw new NotImplementedException();
+            if (DoesUserEmailExists(email))
+            {
+                var guid = Guid.NewGuid().ToString().Replace("-", "");
+
+                var db = new MembershipDB();
+
+                var user = db.Users.First(x => x.Email == email);
+                user.UpdatedOn = DateTime.Now;
+                user.LastUpdatedBy = user.Id;
+                user.PasswordResetToken = guid;
+                user.PasswordResetRequestedOn = DateTime.Now;
+                
+                db.SaveChanges();
+                
+                //todo: send password reset mail
+
+                return true;
+            }
+
+            return false;
+
         }
 
         public bool ChangePasswordForUser(string email, string newPasswordHash)
@@ -216,7 +236,6 @@ namespace Membership.Service
             return false;
         }
 
-
         public bool AddAddress(AddressDto dto)
         {
             throw new NotImplementedException();
@@ -237,7 +256,6 @@ namespace Membership.Service
             throw new NotImplementedException();
         }
 
-
         public UserDto GetUser(string email)
         {
             UserDto user = null;
@@ -250,7 +268,5 @@ namespace Membership.Service
 
             return user;
         }
-
-
     }
 }
