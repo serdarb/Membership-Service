@@ -20,10 +20,10 @@ namespace Membership.Service
         private Dictionary<string, EmployeeDto> EmployeeDictionary { get; set; }
         private Dictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
 
+        private MembershipDB db = new MembershipDB();
+
         public MembershipService()
         {
-            var db = new MembershipDB();
-
             var employeeAssembler = new EmployeeAssembler();
             var supplierEmployeeAssembler = new SupplierEmployeeAssembler();
             var userAsssembler = new UserAssembler();
@@ -95,8 +95,6 @@ namespace Membership.Service
         {
             if (!DoesUserEmailExists(dto.Email))
             {
-                var db = new MembershipDB();
-
                 var gender = db.Genders.First(x => x.Id == dto.Gender.Id);
                 var userType = db.UserTypes.First(x => x.Id == dto.UserType.Id);
 
@@ -164,7 +162,6 @@ namespace Membership.Service
         {
             if (!UserLoginDictionary.ContainsKey(email))
             {
-                var db = new MembershipDB();
                 var user = db.Users.FirstOrDefault(x => x.Email == email);
                 if (user != null)
                 {
@@ -185,9 +182,7 @@ namespace Membership.Service
             if (DoesUserEmailExists(email))
             {
                 var guid = Guid.NewGuid().ToString().Replace("-", "");
-
-                var db = new MembershipDB();
-
+                
                 var user = db.Users.First(x => x.Email == email);
                 user.UpdatedOn = DateTime.Now;
                 user.LastUpdatedBy = user.Id;
@@ -209,7 +204,6 @@ namespace Membership.Service
         {
             if (DoesUserEmailExists(email))
             {
-                var db = new MembershipDB();
                 var user = db.Users.First(x => x.Email == email);
                 if (user != null)
                 {

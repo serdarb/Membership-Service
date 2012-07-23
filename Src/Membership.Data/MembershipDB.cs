@@ -43,8 +43,8 @@ namespace Membership.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<MembershipDB, MigrationConfiguration>());
             Database.SetInitializer(new MembershipDBDatabaseInitializer());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<MembershipDB, MigrationConfiguration>());
             base.OnModelCreating(modelBuilder);
         }
     }
