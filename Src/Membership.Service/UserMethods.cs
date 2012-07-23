@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using Membership.Contract;
 using Membership.Data;
+using Membership.Utils;
 
 namespace Membership.Service
 {
@@ -56,40 +57,20 @@ namespace Membership.Service
         public bool AuthUser(string userName, string password)
         {
             var auth = false;
-
             if (DoesUserEmailExists(userName))
             {
+                var chyptographyHelper = new CryptographyHelper();
+                var passhwordHash = chyptographyHelper.SHA256Hasher(password);
+
                 _lockUserLoginDictionary.EnterReadLock();
-                auth = UserLoginDictionary[userName] == SHA256Hasher(password);
+                auth = UserLoginDictionary[userName] == passhwordHash;
                 _lockUserLoginDictionary.ExitReadLock();
             }
 
             return auth;
         }
 
-        /// <summary>
-        /// Hashes String With SHA256 Algorithm
-        /// </summary>
-        /// <param name="textToHash">Text to Hash</param>
-        /// <returns>The Hash</returns>
-        public static string SHA256Hasher(string textToHash)
-        {
-            var enc = Encoding.Unicode.GetEncoder();
-
-            var unicodeText = new byte[textToHash.Length * 2];
-            enc.GetBytes(textToHash.ToCharArray(), 0, textToHash.Length, unicodeText, 0, true);
-
-            var sha256 = new SHA256CryptoServiceProvider();
-            var result = sha256.ComputeHash(unicodeText);
-
-            var sb = new StringBuilder();
-            for (int i = 0; i < result.Length; i++)
-            {
-                sb.Append(result[i].ToString("X2"));
-            }
-
-            return sb.ToString();
-        }
+        
 
         public int CreateUser(UserDto dto)
         {

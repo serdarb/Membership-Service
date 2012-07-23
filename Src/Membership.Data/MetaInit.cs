@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Membership.Utils;
 
 namespace Membership.Data
 {
@@ -1308,12 +1309,15 @@ namespace Membership.Data
 
         private static void AddUser(string preferredName, string surname, string email, string password, DateTime birthday, string gender, bool isActive, MembershipDB context)
         {
+            var chyptographyHelper = new CryptographyHelper();
+            var passhwordHash = chyptographyHelper.SHA256Hasher(password);
+
             context.Users.Add(new User
             {
                 UserType = context.UserTypes.First(x => x.Name == "Client"),
                 Gender = context.Genders.First(x => x.Name == gender.Trim()),
                 Email = email.Trim(),
-                PasswordHash = SHA256Hasher(password.Trim()),
+                PasswordHash = passhwordHash,
                 Names = string.Format("{0} {1}", preferredName, surname),
                 LastName = surname.Trim(),
                 PreferredName = preferredName.Trim(),
@@ -1324,30 +1328,6 @@ namespace Membership.Data
                 CreatedOn = DateTime.Now,
                 LastUpdatedBy = 1
             });
-        }
-
-        /// <summary>
-        /// Hashes String With SHA256 Algorithm
-        /// </summary>
-        /// <param name="textToHash">Text to Hash</param>
-        /// <returns>The Hash</returns>
-        public static string SHA256Hasher(string textToHash)
-        {
-            var enc = Encoding.Unicode.GetEncoder();
-
-            var unicodeText = new byte[textToHash.Length * 2];
-            enc.GetBytes(textToHash.ToCharArray(), 0, textToHash.Length, unicodeText, 0, true);
-
-            var sha256 = new SHA256CryptoServiceProvider();
-            var result = sha256.ComputeHash(unicodeText);
-
-            var sb = new StringBuilder();
-            for (int i = 0; i < result.Length; i++)
-            {
-                sb.Append(result[i].ToString("X2"));
-            }
-
-            return sb.ToString();
         }
 
         public static void InsertMenuItems(MembershipDB context)
