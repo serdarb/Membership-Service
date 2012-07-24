@@ -51,7 +51,7 @@
     <Compile Include="Assembler\UserTypeAssembler.cs" />
     <Compile Include="SupplierEmployeeMembershipService.cs" />
     <Compile Include="EmployeeMembershipService.cs" />
-    <Compile Include="UserMethods.cs" />
+    <Compile Include="UserMembershipService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

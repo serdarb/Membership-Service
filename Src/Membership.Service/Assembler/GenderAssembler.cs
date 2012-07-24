@@ -4,7 +4,7 @@ using Membership.Data;
 
 namespace Membership.Service
 {
-    class GenderAssembler
+    public class GenderAssembler
     {
         public GenderDto Assemble(Gender entity)
         {

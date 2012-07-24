@@ -13,6 +13,10 @@ namespace Membership.Service
 {
     public class UserMembershipService : IUserMembershipService
     {
+        private readonly EmployeeAssembler _employeeAssembler;
+        private readonly SupplierEmployeeAssembler _supplierEmployeeAssembler;
+        private readonly UserAssembler _userAssembler;
+
         private static readonly ReaderWriterLockSlim _lockUserDictionary = new ReaderWriterLockSlim();
         private static readonly ReaderWriterLockSlim _lockUserLoginDictionary = new ReaderWriterLockSlim();
 
@@ -22,12 +26,14 @@ namespace Membership.Service
         private Dictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
 
         private MembershipDB db = new MembershipDB();
-        
-        public UserMembershipService()
+
+        public UserMembershipService(EmployeeAssembler employeeAssembler, 
+                                     SupplierEmployeeAssembler supplierEmployeeAssembler, 
+                                     UserAssembler userAssembler)
         {
-            var employeeAssembler = new EmployeeAssembler();
-            var supplierEmployeeAssembler = new SupplierEmployeeAssembler();
-            var userAsssembler = new UserAssembler();
+            _employeeAssembler = employeeAssembler;
+            _supplierEmployeeAssembler = supplierEmployeeAssembler;
+            _userAssembler = userAssembler;
 
             UserDictionary = new Dictionary<string, UserDto>();
             EmployeeDictionary = new Dictionary<string, EmployeeDto>();
@@ -37,19 +43,19 @@ namespace Membership.Service
             var employees = db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
             foreach (var employee in employees)
             {
-                EmployeeDictionary.Add(employee.Email, employeeAssembler.Assemble(employee));
+                EmployeeDictionary.Add(employee.Email, _employeeAssembler.Assemble(employee));
             }
 
             var supplierEmployees = db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
             foreach (var supplierEmployee in supplierEmployees)
             {
-                SupplierEmployeeDictionary.Add(supplierEmployee.Email, supplierEmployeeAssembler.Assemble(supplierEmployee));
+                SupplierEmployeeDictionary.Add(supplierEmployee.Email, _supplierEmployeeAssembler.Assemble(supplierEmployee));
             }
 
             var users = db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
             foreach (var user in users)
             {
-                UserDictionary.Add(user.Email, userAsssembler.Assemble(user));
+                UserDictionary.Add(user.Email, _userAssembler.Assemble(user));
                 UserLoginDictionary.Add(user.Email, user.PasswordHash);
             }
         }
@@ -112,9 +118,8 @@ namespace Membership.Service
                     _lockUserLoginDictionary.EnterWriteLock();
                     UserLoginDictionary.Add(user.Email, user.PasswordHash);
                     _lockUserLoginDictionary.ExitWriteLock();
-
-                    var userAssembler = new UserAssembler();
-                    var userDto = userAssembler.Assemble(user);
+                    
+                    var userDto = _userAssembler.Assemble(user);
 
                     _lockUserDictionary.EnterWriteLock();
                     UserDictionary.Add(user.Email, userDto);
@@ -190,11 +195,9 @@ namespace Membership.Service
                     user.UpdatedOn = DateTime.Now;
 
                     db.SaveChanges();
-
-                    var userAssembler = new UserAssembler();
-
+                    
                     _lockUserDictionary.EnterWriteLock();
-                    UserDictionary[email] = userAssembler.Assemble(user);
+                    UserDictionary[email] = _userAssembler.Assemble(user);
                     _lockUserDictionary.ExitWriteLock();
 
                     _lockUserLoginDictionary.EnterWriteLock();

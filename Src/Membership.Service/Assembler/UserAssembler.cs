@@ -4,7 +4,7 @@ using Membership.Data;
 
 namespace Membership.Service
 {
-    class UserAssembler
+    public class UserAssembler
     {
         public UserDto Assemble(User entity)
         {

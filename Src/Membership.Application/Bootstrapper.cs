@@ -38,6 +38,10 @@ namespace Membership.Application
                                     };
 
             Container.Register(Types.FromAssemblyNamed("Membership.Service")
+                                   .Pick().If(x => x.Name.EndsWith("Assembler"))
+                                   .Configure(configurer => configurer.Named(configurer.Implementation.Name).LifestyleTransient()));
+            
+            Container.Register(Types.FromAssemblyNamed("Membership.Service")
                                    .Pick().If(type => type.GetInterfaces().Any(i => i.IsDefined(typeof(ServiceContractAttribute), true)))
                                    .Configure(configurer => configurer.Named(configurer.Implementation.Name)
                                                                 .LifestyleSingleton()
