@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
@@ -20,10 +21,10 @@ namespace Membership.Service
         private static readonly ReaderWriterLockSlim _lockUserDictionary = new ReaderWriterLockSlim();
         private static readonly ReaderWriterLockSlim _lockUserLoginDictionary = new ReaderWriterLockSlim();
 
-        private Dictionary<string, UserDto> UserDictionary { get; set; }
-        private Dictionary<string, string> UserLoginDictionary { get; set; }
-        private Dictionary<string, EmployeeDto> EmployeeDictionary { get; set; }
-        private Dictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
+        private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
+        private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
+        private ConcurrentDictionary<string, EmployeeDto> EmployeeDictionary { get; set; }
+        private ConcurrentDictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
 
         private MembershipDB db = new MembershipDB();
 
@@ -35,28 +36,28 @@ namespace Membership.Service
             _supplierEmployeeAssembler = supplierEmployeeAssembler;
             _userAssembler = userAssembler;
 
-            UserDictionary = new Dictionary<string, UserDto>();
-            EmployeeDictionary = new Dictionary<string, EmployeeDto>();
-            SupplierEmployeeDictionary = new Dictionary<string, SupplierEmployeeDto>();
-            UserLoginDictionary = new Dictionary<string, string>();
+            UserDictionary = new ConcurrentDictionary<string, UserDto>();
+            EmployeeDictionary = new ConcurrentDictionary<string, EmployeeDto>();
+            SupplierEmployeeDictionary = new ConcurrentDictionary<string, SupplierEmployeeDto>();
+            UserLoginDictionary = new ConcurrentDictionary<string, string>();
 
             var employees = db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
             foreach (var employee in employees)
             {
-                EmployeeDictionary.Add(employee.Email, _employeeAssembler.Assemble(employee));
+                EmployeeDictionary.TryAdd(employee.Email, _employeeAssembler.Assemble(employee));
             }
 
             var supplierEmployees = db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
             foreach (var supplierEmployee in supplierEmployees)
             {
-                SupplierEmployeeDictionary.Add(supplierEmployee.Email, _supplierEmployeeAssembler.Assemble(supplierEmployee));
+                SupplierEmployeeDictionary.TryAdd(supplierEmployee.Email, _supplierEmployeeAssembler.Assemble(supplierEmployee));
             }
 
             var users = db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
             foreach (var user in users)
             {
-                UserDictionary.Add(user.Email, _userAssembler.Assemble(user));
-                UserLoginDictionary.Add(user.Email, user.PasswordHash);
+                UserDictionary.TryAdd(user.Email, _userAssembler.Assemble(user));
+                UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
             }
         }
 
@@ -116,13 +117,13 @@ namespace Membership.Service
                 if (user != null)
                 {
                     _lockUserLoginDictionary.EnterWriteLock();
-                    UserLoginDictionary.Add(user.Email, user.PasswordHash);
+                    UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
                     _lockUserLoginDictionary.ExitWriteLock();
                     
                     var userDto = _userAssembler.Assemble(user);
 
                     _lockUserDictionary.EnterWriteLock();
-                    UserDictionary.Add(user.Email, userDto);
+                    UserDictionary.TryAdd(user.Email, userDto);
                     _lockUserDictionary.ExitWriteLock();
 
                     return user.Id;
