@@ -7,6 +7,7 @@ namespace Membership.Utils
 {
     public class CryptographyHelper
     {
+        //
         private const string Key = ".membership-service#3des%key,";
 
         /// <summary>
