@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
+using Membership.Utils.Encryption.Base;
 
-namespace Membership.Utils
+namespace Membership.Utils.Encryption
 {
-    public class CryptographyHelper
+    public class CryptographyHelper : AbstractEncryption
     {
         private const string Key = ".membership-service#3des%key,";
 
@@ -39,7 +40,7 @@ namespace Membership.Utils
         /// <param name="textToEncrypt">Text to Encypt</param>
         ///  <param name="key">Public Key</param>
         /// <returns>Encrypted Text</returns>
-        public string TripleDESEncrypt(string textToEncrypt)
+        private string TripleDESEncrypt(string textToEncrypt)
         {
             var keyArray = Encoding.UTF8.GetBytes(Key);
             var toEncryptArray = Encoding.UTF8.GetBytes(textToEncrypt);
@@ -64,7 +65,7 @@ namespace Membership.Utils
         /// <param name="textToDecrypt">Text to Decrypt</param>
         ///  <param name="key">Public Key</param>
         /// <returns>Decrypted Text</returns>
-        public string TripleDESDecrypt(string textToDecrypt)
+        private string TripleDESDecrypt(string textToDecrypt)
         {
             var keyArray = Encoding.UTF8.GetBytes(Key);
             var toEncryptArray = Convert.FromBase64String(textToDecrypt);
@@ -105,7 +106,7 @@ namespace Membership.Utils
             return ByteToHex(byteC);
         }
 
-        public string ReverseString(string text)
+        private string ReverseString(string text)
         {
             char[] arr = text.ToCharArray();
             Array.Reverse(arr);
@@ -130,6 +131,16 @@ namespace Membership.Utils
                 arrayByte[i / 2] = byte.Parse(hex.Substring(i, 2), System.Globalization.NumberStyles.HexNumber);
             }
             return arrayByte;
+        }
+
+        public override string Encrypt(string data)
+        {
+            return TripleDESEncrypt(data);
+        }
+
+        public override string Decrypt(string data)
+        {
+            return TripleDESDecrypt(data);
         }
     }
 }

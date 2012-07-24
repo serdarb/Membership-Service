@@ -9,6 +9,7 @@ using System.Threading;
 using Membership.Contract;
 using Membership.Data;
 using Membership.Utils;
+using Membership.Utils.Encryption;
 
 namespace Membership.Service
 {

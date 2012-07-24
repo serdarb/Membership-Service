@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Membership.Utils;
+using Membership.Utils.Encryption;
 
 namespace Membership.Data
 {
