@@ -49,8 +49,8 @@
     <Compile Include="Assembler\SupplierEmployeeAssembler.cs" />
     <Compile Include="Assembler\UserAssembler.cs" />
     <Compile Include="Assembler\UserTypeAssembler.cs" />
-    <Compile Include="SupplierEmployeeMethods.cs" />
-    <Compile Include="EmployeeMethods.cs" />
+    <Compile Include="SupplierEmployeeMembershipService.cs" />
+    <Compile Include="EmployeeMembershipService.cs" />
     <Compile Include="UserMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -11,7 +11,7 @@ using Membership.Utils;
 
 namespace Membership.Service
 {
-    public partial class MembershipService : IMembershipService
+    public class UserMembershipService : IUserMembershipService
     {
         private static readonly ReaderWriterLockSlim _lockUserDictionary = new ReaderWriterLockSlim();
         private static readonly ReaderWriterLockSlim _lockUserLoginDictionary = new ReaderWriterLockSlim();
@@ -22,8 +22,8 @@ namespace Membership.Service
         private Dictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
 
         private MembershipDB db = new MembershipDB();
-
-        public MembershipService()
+        
+        public UserMembershipService()
         {
             var employeeAssembler = new EmployeeAssembler();
             var supplierEmployeeAssembler = new SupplierEmployeeAssembler();
@@ -69,9 +69,7 @@ namespace Membership.Service
 
             return auth;
         }
-
         
-
         public int CreateUser(UserDto dto)
         {
             if (!DoesUserEmailExists(dto.Email))
@@ -128,8 +126,7 @@ namespace Membership.Service
 
             return 0;
         }
-
-
+        
         public bool DoesUserEmailExists(string email)
         {
             _lockUserLoginDictionary.EnterReadLock();

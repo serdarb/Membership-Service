@@ -38,6 +38,8 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ISupplierEmployeeMembershipService.cs" />
+    <Compile Include="IEmployeeMembershipService.cs" />
     <Compile Include="Dto\AddressDto.cs" />
     <Compile Include="Dto\BaseDto.cs" />
     <Compile Include="Dto\CityDto.cs" />
@@ -46,7 +48,7 @@
     <Compile Include="Dto\EmployeeDto.cs" />
     <Compile Include="Dto\GenderDto.cs" />
     <Compile Include="Dto\GeoZoneDto.cs" />
-    <Compile Include="IMembershipService.cs" />
+    <Compile Include="IUserMembershipService.cs" />
     <Compile Include="Dto\PhoneDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dto\SupplierDto.cs" />

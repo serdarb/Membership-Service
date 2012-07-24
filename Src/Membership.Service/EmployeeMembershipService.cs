@@ -6,7 +6,7 @@ using Membership.Contract;
 
 namespace Membership.Service
 {
-    public partial class MembershipService : IMembershipService
+    public class EmployeeMembershipService : IEmployeeMembershipService
     {
         public bool AuthEmployee(string userName, string password)
         {
@@ -23,14 +23,22 @@ namespace Membership.Service
             throw new NotImplementedException();
         }
 
-
-
         public bool RequestPasswordResetForEmployee(string email)
         {
             throw new NotImplementedException();
         }
 
         public bool ChangePasswordForEmployee(string email, string newPasswordHash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddAddress(AddressDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddPhone(PhoneDto dto)
         {
             throw new NotImplementedException();
         }
