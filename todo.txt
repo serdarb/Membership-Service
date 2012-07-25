@@ -1,0 +1,4 @@
+﻿* use dbmigrator
+* use automapper
+* fix namespace
+* add repository pattern

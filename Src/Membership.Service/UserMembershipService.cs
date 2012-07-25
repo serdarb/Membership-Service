@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Membership.Contract;
 using Membership.Data;
-using Membership.Utils;
+using Membership.Utils.Encryption;
 
 namespace Membership.Service
 {
@@ -14,9 +14,11 @@ namespace Membership.Service
         private readonly EmployeeAssembler _employeeAssembler;
         private readonly SupplierEmployeeAssembler _supplierEmployeeAssembler;
         private readonly UserAssembler _userAssembler;
+        private readonly CryptographyHelper _cryptographyHelper;
 
-        private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
+        private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
+        private ConcurrentDictionary<int, UserDto> UserByIdDictionary { get; set; }
         private ConcurrentDictionary<string, EmployeeDto> EmployeeDictionary { get; set; }
         private ConcurrentDictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
 
@@ -24,30 +26,38 @@ namespace Membership.Service
 
         public UserMembershipService(EmployeeAssembler employeeAssembler,
                                      SupplierEmployeeAssembler supplierEmployeeAssembler,
-                                     UserAssembler userAssembler)
+                                     UserAssembler userAssembler,
+                                     CryptographyHelper cryptographyHelper)
         {
             _employeeAssembler = employeeAssembler;
             _supplierEmployeeAssembler = supplierEmployeeAssembler;
             _userAssembler = userAssembler;
+            _cryptographyHelper = cryptographyHelper;
 
             UserDictionary = new ConcurrentDictionary<string, UserDto>();
             EmployeeDictionary = new ConcurrentDictionary<string, EmployeeDto>();
             SupplierEmployeeDictionary = new ConcurrentDictionary<string, SupplierEmployeeDto>();
             UserLoginDictionary = new ConcurrentDictionary<string, string>();
 
-            var userLogin = db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
-            foreach (var user in userLogin)
+            var userLoginTask = new Task(() =>
             {
-                UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
-            }
+                var userLogin = db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
+                foreach (var user in userLogin)
+                {
+                    UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
+
+                }
+            });
+            userLoginTask.Start();
 
             var usersTask = new Task(() =>
             {
                 var users = db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
-
                 foreach (var user in users)
                 {
-                    UserDictionary.TryAdd(user.Email, _userAssembler.Assemble(user));
+                    var dto = _userAssembler.Assemble(user);
+                    UserDictionary.TryAdd(user.Email, dto);
+                    UserByIdDictionary.TryAdd(user.Id, dto);
                 }
             });
             usersTask.Start();
@@ -69,7 +79,7 @@ namespace Membership.Service
             });
             employeesTask.Start();
 
-            Task.WaitAll(usersTask, employeesTask);
+            Task.WaitAll(userLoginTask, usersTask, employeesTask);
         }
 
         public bool AuthUser(string userName, string password)
@@ -77,9 +87,7 @@ namespace Membership.Service
             var auth = false;
             if (DoesUserEmailExists(userName))
             {
-                var chyptographyHelper = new CryptographyHelper();
-                var passhwordHash = chyptographyHelper.SHA256Hasher(password);
-
+                var passhwordHash = _cryptographyHelper.SHA256Hasher(password);
                 auth = UserLoginDictionary[userName] == passhwordHash;
             }
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using Membership.Utils;
+using Membership.Utils.Encryption;
 
 namespace Membership.Data
 {
@@ -11,16 +9,16 @@ namespace Membership.Data
         public static void InsertCountryTurkeyAndGeoZones(MembershipDB context)
         {
             var countryTurkey = new Country
-            {
-                Id = 90,
-                CountryCode = "tr",
-                Name = "Türkiye Cumhuriyeti",
-                ShortName = "Türkiye",
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            };
+                                    {
+                                        Id = 90,
+                                        CountryCode = "tr",
+                                        Name = "Türkiye Cumhuriyeti",
+                                        ShortName = "Türkiye",
+                                        Comment = string.Empty,
+                                        UpdatedOn = DateTime.Now,
+                                        CreatedOn = DateTime.Now,
+                                        LastUpdatedBy = 1
+                                    };
             context.Countries.Add(countryTurkey);
             context.SaveChanges();
 
@@ -38,14 +36,14 @@ namespace Membership.Data
         private static void AddGeoZone(string name, Country country, MembershipDB context)
         {
             context.GeoZones.Add(new GeoZone
-            {
-                Country = country,
-                Name = name.Trim(),
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                     {
+                                         Country = country,
+                                         Name = name.Trim(),
+                                         Comment = string.Empty,
+                                         UpdatedOn = DateTime.Now,
+                                         CreatedOn = DateTime.Now,
+                                         LastUpdatedBy = 1
+                                     });
         }
 
         public static void InsertGender(MembershipDB context)
@@ -60,13 +58,13 @@ namespace Membership.Data
         private static void AddGender(string name, MembershipDB context)
         {
             context.Genders.Add(new Gender
-            {
-                Name = name.Trim(),
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                    {
+                                        Name = name.Trim(),
+                                        Comment = string.Empty,
+                                        UpdatedOn = DateTime.Now,
+                                        CreatedOn = DateTime.Now,
+                                        LastUpdatedBy = 1
+                                    });
         }
 
         public static void InsertLogEvent(MembershipDB context)
@@ -80,14 +78,14 @@ namespace Membership.Data
         private static void AddLogEvent(string name, string description, MembershipDB context)
         {
             context.LogEvents.Add(new LogEvent
-            {
-                Name = name.Trim(),
-                Description = description.Trim(),
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                      {
+                                          Name = name.Trim(),
+                                          Description = description.Trim(),
+                                          Comment = string.Empty,
+                                          UpdatedOn = DateTime.Now,
+                                          CreatedOn = DateTime.Now,
+                                          LastUpdatedBy = 1
+                                      });
         }
 
         public static void InsertUserType(MembershipDB context)
@@ -102,14 +100,14 @@ namespace Membership.Data
         private static void AddUserType(string name, MembershipDB context)
         {
             context.UserTypes.Add(new UserType
-            {
-                Name = name.Trim(),
-                Description = string.Empty,
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                      {
+                                          Name = name.Trim(),
+                                          Description = string.Empty,
+                                          Comment = string.Empty,
+                                          UpdatedOn = DateTime.Now,
+                                          CreatedOn = DateTime.Now,
+                                          LastUpdatedBy = 1
+                                      });
         }
 
         public static void InsertCity(MembershipDB context)
@@ -212,15 +210,15 @@ namespace Membership.Data
             var _name = name.Trim();
 
             context.Cities.Add(new City
-            {
-                Name = string.Format("{0}{1}", _name[0], _name.Substring(1).ToLower()),
-                Id = id,
-                GeoZone = geozone,
-                Comment = string.Empty,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                   {
+                                       Name = string.Format("{0}{1}", _name[0], _name.Substring(1).ToLower()),
+                                       Id = id,
+                                       GeoZone = geozone,
+                                       Comment = string.Empty,
+                                       CreatedOn = DateTime.Now,
+                                       UpdatedOn = DateTime.Now,
+                                       LastUpdatedBy = 1
+                                   });
         }
 
         public static void InsertCounty(MembershipDB context)
@@ -1289,50 +1287,53 @@ namespace Membership.Data
             var _name = name.Trim();
 
             context.Counties.Add(new County
-            {
-                Name = string.Format("{0}{1}", _name[0], _name.Substring(1).ToLower()),
-                City = city,
-                Comment = string.Empty,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                     {
+                                         Name = string.Format("{0}{1}", _name[0], _name.Substring(1).ToLower()),
+                                         City = city,
+                                         Comment = string.Empty,
+                                         CreatedOn = DateTime.Now,
+                                         UpdatedOn = DateTime.Now,
+                                         LastUpdatedBy = 1
+                                     });
         }
 
         public static void InsertUsers(MembershipDB context)
         {
             AddUser("Programatic", "Admin", "admin@admin.com", "password", DateTime.Now, "Man", true, context);
-            AddUser("Hüseyin Serdar", "Büyüktemiz", "hserdarb@gmail.com", "password", new DateTime(1982, 8, 2), "Man", true, context);
+            AddUser("Hüseyin Serdar", "Büyüktemiz", "hserdarb@gmail.com", "password", new DateTime(1982, 8, 2), "Man",
+                    true, context);
 
             for (int i = 1; i < 1001; i++)
             {
-                AddUser(string.Format("test{0}", i), "user", string.Format("test{0}@test.com", i), "password", DateTime.Now, "Man", true, context);
+                AddUser(string.Format("test{0}", i), "user", string.Format("test{0}@test.com", i), "password",
+                        DateTime.Now, "Man", true, context);
             }
 
             context.SaveChanges();
         }
 
-        private static void AddUser(string preferredName, string surname, string email, string password, DateTime birthday, string gender, bool isActive, MembershipDB context)
+        private static void AddUser(string preferredName, string surname, string email, string password,
+                                    DateTime birthday, string gender, bool isActive, MembershipDB context)
         {
             var chyptographyHelper = new CryptographyHelper();
             var passhwordHash = chyptographyHelper.SHA256Hasher(password);
 
             context.Users.Add(new User
-            {
-                UserType = context.UserTypes.First(x => x.Name == "Client"),
-                Gender = context.Genders.First(x => x.Name == gender.Trim()),
-                Email = email.Trim(),
-                PasswordHash = passhwordHash,
-                Names = string.Format("{0} {1}", preferredName, surname),
-                LastName = surname.Trim(),
-                PreferredName = preferredName.Trim(),
-                IsActive = isActive,
-                Birthday = birthday,
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                  {
+                                      UserType = context.UserTypes.First(x => x.Name == "Client"),
+                                      Gender = context.Genders.First(x => x.Name == gender.Trim()),
+                                      Email = email.Trim(),
+                                      PasswordHash = passhwordHash,
+                                      Names = string.Format("{0} {1}", preferredName, surname),
+                                      LastName = surname.Trim(),
+                                      PreferredName = preferredName.Trim(),
+                                      IsActive = isActive,
+                                      Birthday = birthday,
+                                      Comment = string.Empty,
+                                      UpdatedOn = DateTime.Now,
+                                      CreatedOn = DateTime.Now,
+                                      LastUpdatedBy = 1
+                                  });
         }
 
         public static void InsertMenuItems(MembershipDB context)
@@ -1349,31 +1350,33 @@ namespace Membership.Data
             context.SaveChanges();
         }
 
-        private static void AddMenuItemGroup(string navigateUrl, string name, AdminMenuItemGroup parentMenuItemGroup, int displayOrder, MembershipDB context)
+        private static void AddMenuItemGroup(string navigateUrl, string name, AdminMenuItemGroup parentMenuItemGroup,
+                                             int displayOrder, MembershipDB context)
         {
             context.AdminMenuItemGroups.Add(new AdminMenuItemGroup
-            {
-                DisplayOrder = displayOrder,
-                ParentAdminMenuItemGroup = parentMenuItemGroup,
-                Name = name.Trim(),
-                NavigateUrl = navigateUrl.Trim(),
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                                {
+                                                    DisplayOrder = displayOrder,
+                                                    ParentAdminMenuItemGroup = parentMenuItemGroup,
+                                                    Name = name.Trim(),
+                                                    NavigateUrl = navigateUrl.Trim(),
+                                                    UpdatedOn = DateTime.Now,
+                                                    CreatedOn = DateTime.Now,
+                                                    LastUpdatedBy = 1
+                                                });
         }
 
-        private static void AddMenuItem(string navigateUrl, string name, AdminMenuItemGroup menuItemGroup, MembershipDB context)
+        private static void AddMenuItem(string navigateUrl, string name, AdminMenuItemGroup menuItemGroup,
+                                        MembershipDB context)
         {
             context.AdminMenuItems.Add(new AdminMenuItem
-            {
-                NavigateUrl = navigateUrl.Trim(),
-                Name = name.Trim(),
-                AdminMenuItemGroup = menuItemGroup,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                           {
+                                               NavigateUrl = navigateUrl.Trim(),
+                                               Name = name.Trim(),
+                                               AdminMenuItemGroup = menuItemGroup,
+                                               UpdatedOn = DateTime.Now,
+                                               CreatedOn = DateTime.Now,
+                                               LastUpdatedBy = 1
+                                           });
         }
 
         public static void InsertRole(MembershipDB context)
@@ -1387,14 +1390,14 @@ namespace Membership.Data
         private static void AddAdminRole(string name, string description, MembershipDB context)
         {
             context.AdminRoles.Add(new AdminRole
-            {
-                Name = name.Trim(),
-                Description = description.Trim(),
-                Comment = string.Empty,
-                UpdatedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                LastUpdatedBy = 1
-            });
+                                       {
+                                           Name = name.Trim(),
+                                           Description = description.Trim(),
+                                           Comment = string.Empty,
+                                           UpdatedOn = DateTime.Now,
+                                           CreatedOn = DateTime.Now,
+                                           LastUpdatedBy = 1
+                                       });
         }
     }
 }
