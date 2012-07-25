@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\..\packages\AutoMapper.2.1.267\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.4.3.1\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
@@ -43,12 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assembler\EmployeeAssembler.cs" />
-    <Compile Include="Assembler\GenderAssembler.cs" />
-    <Compile Include="Assembler\SupplierAssembler.cs" />
-    <Compile Include="Assembler\SupplierEmployeeAssembler.cs" />
-    <Compile Include="Assembler\UserAssembler.cs" />
-    <Compile Include="Assembler\UserTypeAssembler.cs" />
+    <Compile Include="AutoMapper.cs" />
     <Compile Include="SupplierEmployeeMembershipService.cs" />
     <Compile Include="EmployeeMembershipService.cs" />
     <Compile Include="UserMembershipService.cs" />
@@ -67,6 +65,9 @@
       <Project>{AE2345A0-C65E-450A-8818-B1BAEBA93DFB}</Project>
       <Name>Membership.Utils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

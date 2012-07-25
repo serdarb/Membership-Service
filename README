@@ -1,6 +1,10 @@
-This project is aming to be a simple and good membership service alternative.
+================================
 
-* This is a Windows Service.
+What is Membership Service?
+--------------------------------
+This project is aming to be a very simple and usable membership service alternative.
+
+* This is a Windows Service (WCF).
 * This is a Seperated Database for Membership.
 
 

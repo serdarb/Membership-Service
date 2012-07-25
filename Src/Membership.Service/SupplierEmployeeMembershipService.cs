@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Membership.Contract;
-
-namespace Membership.Service
+﻿namespace Membership.Service
 {
+    using System;
+
+    using Membership.Contract;
+
+    /// <summary>
+    /// The supplier employee membership service.
+    /// </summary>
     public class SupplierEmployeeMembershipService : ISupplierEmployeeMembershipService
     {
         public bool AuthSupplierEmployee(string userName, string password)

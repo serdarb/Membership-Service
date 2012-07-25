@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
-using Membership.Contract;
-using Membership.Data;
-using Membership.Utils.Encryption;
-
-namespace Membership.Service
+﻿namespace Membership.Service
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Data.Entity;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using AutoMapper;
+
+    using Membership.Contract;
+    using Membership.Data;
+    using Membership.Utils.Encryption;
+
+    /// <summary>
+    /// The user membership service.
+    /// </summary>
     public class UserMembershipService : IUserMembershipService
     {
-        private readonly EmployeeAssembler _employeeAssembler;
-        private readonly SupplierEmployeeAssembler _supplierEmployeeAssembler;
-        private readonly UserAssembler _userAssembler;
-        private readonly CryptographyHelper _cryptographyHelper;
-
         private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
         private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<int, UserDto> UserByIdDictionary { get; set; }
@@ -24,38 +25,28 @@ namespace Membership.Service
 
         private MembershipDB db = new MembershipDB();
 
-        public UserMembershipService(EmployeeAssembler employeeAssembler,
-                                     SupplierEmployeeAssembler supplierEmployeeAssembler,
-                                     UserAssembler userAssembler,
-                                     CryptographyHelper cryptographyHelper)
+        public UserMembershipService()
         {
-            _employeeAssembler = employeeAssembler;
-            _supplierEmployeeAssembler = supplierEmployeeAssembler;
-            _userAssembler = userAssembler;
-            _cryptographyHelper = cryptographyHelper;
+            AutoMapperConfiguration.CreateMaps();
 
-            UserDictionary = new ConcurrentDictionary<string, UserDto>();
-            EmployeeDictionary = new ConcurrentDictionary<string, EmployeeDto>();
-            SupplierEmployeeDictionary = new ConcurrentDictionary<string, SupplierEmployeeDto>();
-            UserLoginDictionary = new ConcurrentDictionary<string, string>();
+            this.UserDictionary = new ConcurrentDictionary<string, UserDto>();
+            this.UserLoginDictionary = new ConcurrentDictionary<string, string>();
+            this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();
+            this.EmployeeDictionary = new ConcurrentDictionary<string, EmployeeDto>();
+            this.SupplierEmployeeDictionary = new ConcurrentDictionary<string, SupplierEmployeeDto>();
 
-            var userLoginTask = new Task(() =>
+            var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
+            foreach (var user in userLogin)
             {
-                var userLogin = db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
-                foreach (var user in userLogin)
-                {
-                    UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
-
-                }
-            });
-            userLoginTask.Start();
+                this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
+            }
 
             var usersTask = new Task(() =>
             {
-                var users = db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
+                var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
                 foreach (var user in users)
                 {
-                    var dto = _userAssembler.Assemble(user);
+                    var dto = Mapper.Map<User, UserDto>(user);
                     UserDictionary.TryAdd(user.Email, dto);
                     UserByIdDictionary.TryAdd(user.Id, dto);
                 }
@@ -64,44 +55,66 @@ namespace Membership.Service
 
             var employeesTask = new Task(() =>
             {
-                var employees = db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
-                var supplierEmployees = db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
+                var employees = this.db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
+                var supplierEmployees = this.db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
 
                 foreach (var employee in employees)
                 {
-                    EmployeeDictionary.TryAdd(employee.Email, _employeeAssembler.Assemble(employee));
+                    var dto = Mapper.Map<Employee, EmployeeDto>(employee);
+                    EmployeeDictionary.TryAdd(employee.Email, dto);
                 }
 
                 foreach (var supplierEmployee in supplierEmployees)
                 {
-                    SupplierEmployeeDictionary.TryAdd(supplierEmployee.Email, _supplierEmployeeAssembler.Assemble(supplierEmployee));
+                    var dto = Mapper.Map<SupplierEmployee, SupplierEmployeeDto>(supplierEmployee);
+                    SupplierEmployeeDictionary.TryAdd(supplierEmployee.Email, dto);
                 }
             });
             employeesTask.Start();
 
-            Task.WaitAll(userLoginTask, usersTask, employeesTask);
+            Task.WaitAll(usersTask, employeesTask);
         }
 
-        public bool AuthUser(string userName, string password)
+        /// <summary>
+        /// The auth user.
+        /// </summary>
+        /// <param name="userName">
+        /// The user name.
+        /// </param>
+        /// <param name="passwordHash">
+        /// The password hash.
+        /// </param>
+        /// <returns>
+        /// The System.Boolean.
+        /// </returns>
+        public bool AuthUser(string userName, string passwordHash)
         {
             var auth = false;
-            if (DoesUserEmailExists(userName))
+            if (this.DoesUserEmailExists(userName))
             {
-                var passhwordHash = _cryptographyHelper.SHA256Hasher(password);
-                auth = UserLoginDictionary[userName] == passhwordHash;
+                auth = this.UserLoginDictionary[userName] == passwordHash;
             }
 
             return auth;
         }
 
+        /// <summary>
+        /// The create user.
+        /// </summary>
+        /// <param name="dto">
+        /// The userDto.
+        /// </param>
+        /// <returns>
+        /// The System.Int32 userId.
+        /// </returns>
         public int CreateUser(UserDto dto)
         {
-            if (!DoesUserEmailExists(dto.Email))
+            if (!this.DoesUserEmailExists(dto.Email))
             {
-                var gender = db.Genders.First(x => x.Id == dto.Gender.Id);
-                var userType = db.UserTypes.First(x => x.Id == dto.UserType.Id);
+                var gender = this.db.Genders.First(x => x.Id == dto.Gender.Id);
+                var userType = this.db.UserTypes.First(x => x.Id == dto.UserType.Id);
 
-                db.Users.Add(new User
+                this.db.Users.Add(new User
                                  {
                                      CreatedOn = DateTime.Now,
                                      UpdatedOn = DateTime.Now,
@@ -128,15 +141,15 @@ namespace Membership.Service
                                      IdentityNumber = dto.IdentityNumber,
                                      AffiliateSlug = dto.AffiliateSlug
                                  });
-                db.SaveChanges();
+                this.db.SaveChanges();
 
-                var user = db.Users.FirstOrDefault(x => x.Email == dto.Email);
+                var user = this.db.Users.FirstOrDefault(x => x.Email == dto.Email);
                 if (user != null)
                 {
-                    UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
+                    this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
 
-                    var userDto = _userAssembler.Assemble(user);
-                    UserDictionary.TryAdd(user.Email, userDto);
+                    var userDto = Mapper.Map<User, UserDto>(user);
+                    this.UserDictionary.TryAdd(user.Email, userDto);
 
                     return user.Id;
                 }
@@ -145,22 +158,40 @@ namespace Membership.Service
             return 0;
         }
 
+        /// <summary>
+        /// The does user email exists.
+        /// </summary>
+        /// <param name="email">
+        /// The email.
+        /// </param>
+        /// <returns>
+        /// The System.Boolean result.
+        /// </returns>
         public bool DoesUserEmailExists(string email)
         {
-            return UserLoginDictionary.ContainsKey(email); ;
+            return this.UserLoginDictionary.ContainsKey(email);
         }
 
+        /// <summary>
+        /// The delete user.
+        /// </summary>
+        /// <param name="email">
+        /// The email.
+        /// </param>
+        /// <returns>
+        /// The System.Boolean.
+        /// </returns>
         public bool DeleteUser(string email)
         {
-            if (!UserLoginDictionary.ContainsKey(email))
+            if (!this.UserLoginDictionary.ContainsKey(email))
             {
-                var user = db.Users.FirstOrDefault(x => x.Email == email);
+                var user = this.db.Users.FirstOrDefault(x => x.Email == email);
                 if (user != null)
                 {
                     user.DeletedOn = DateTime.Now;
                     user.LastUpdatedBy = user.Id;
 
-                    db.SaveChanges();
+                    this.db.SaveChanges();
 
                     return true;
                 }
@@ -169,19 +200,28 @@ namespace Membership.Service
             return false;
         }
 
+        /// <summary>
+        /// The request password reset for user.
+        /// </summary>
+        /// <param name="email">
+        /// The email.
+        /// </param>
+        /// <returns>
+        /// The System.Boolean.
+        /// </returns>
         public bool RequestPasswordResetForUser(string email)
         {
-            if (DoesUserEmailExists(email))
+            if (this.DoesUserEmailExists(email))
             {
-                var guid = Guid.NewGuid().ToString().Replace("-", "");
+                var guid = Guid.NewGuid().ToString().Replace("-", string.Empty);
 
-                var user = db.Users.First(x => x.Email == email);
+                var user = this.db.Users.First(x => x.Email == email);
                 user.UpdatedOn = DateTime.Now;
                 user.LastUpdatedBy = user.Id;
                 user.PasswordResetToken = guid;
                 user.PasswordResetRequestedOn = DateTime.Now;
 
-                db.SaveChanges();
+                this.db.SaveChanges();
 
                 //todo: send password reset mail
 
@@ -192,21 +232,34 @@ namespace Membership.Service
 
         }
 
+        /// <summary>
+        /// The change password for user.
+        /// </summary>
+        /// <param name="email">
+        /// The email.
+        /// </param>
+        /// <param name="newPasswordHash">
+        /// The new password hash.
+        /// </param>
+        /// <returns>
+        /// The System.Boolean.
+        /// </returns>
         public bool ChangePasswordForUser(string email, string newPasswordHash)
         {
-            if (DoesUserEmailExists(email))
+            if (this.DoesUserEmailExists(email))
             {
-                var user = db.Users.First(x => x.Email == email);
+                var user = this.db.Users.First(x => x.Email == email);
                 if (user != null)
                 {
                     user.PasswordHash = newPasswordHash;
                     user.LastUpdatedBy = user.Id;
                     user.UpdatedOn = DateTime.Now;
 
-                    db.SaveChanges();
+                    this.db.SaveChanges();
 
-                    UserDictionary[email] = _userAssembler.Assemble(user);
-                    UserLoginDictionary[email] = newPasswordHash;
+                    var dto = Mapper.Map<User, UserDto>(user);
+                    this.UserDictionary[email] = dto;
+                    this.UserLoginDictionary[email] = newPasswordHash;
 
                     return true;
                 }
@@ -235,12 +288,21 @@ namespace Membership.Service
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// The get user. Give the users email and get the dto.
+        /// </summary>
+        /// <param name="email">
+        /// The user's email.
+        /// </param>
+        /// <returns>
+        /// The Membership.Contract.UserDto.
+        /// </returns>
         public UserDto GetUser(string email)
         {
             UserDto user = null;
-            if (DoesUserEmailExists(email))
+            if (this.DoesUserEmailExists(email))
             {
-                user = UserDictionary[email];
+                user = this.UserDictionary[email];
             }
 
             return user;

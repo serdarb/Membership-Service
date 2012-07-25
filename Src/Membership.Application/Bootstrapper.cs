@@ -1,17 +1,21 @@
-using System;
-using System.Configuration;
-using System.Linq;
-using System.ServiceModel;
-using Castle.Facilities.WcfIntegration;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-
 namespace Membership.Application
 {
+    using System;
+    using System.Configuration;
+    using System.Linq;
+    using System.ServiceModel;
+
+    using Castle.Facilities.WcfIntegration;
+    using Castle.MicroKernel.Registration;
+    using Castle.Windsor;
+
+    /// <summary>
+    /// The bootstrapper.
+    /// </summary>
     internal class Bootstrapper
     {
         public static IWindsorContainer Container { get; private set; }
-
+        
         public static void Initialize()
         {
             Container = new WindsorContainer();
@@ -36,10 +40,6 @@ namespace Membership.Application
                                         ReceiveTimeout = new TimeSpan(0, 30, 0),
                                         SendTimeout = new TimeSpan(0, 30, 0)
                                     };
-
-            Container.Register(Types.FromAssemblyNamed("Membership.Service")
-                                   .Pick().If(x => x.Name.EndsWith("Assembler"))
-                                   .Configure(configurer => configurer.Named(configurer.Implementation.Name).LifestyleTransient()));
             
             Container.Register(Types.FromAssemblyNamed("Membership.Service")
                                    .Pick().If(type => type.GetInterfaces().Any(i => i.IsDefined(typeof(ServiceContractAttribute), true)))
@@ -50,9 +50,10 @@ namespace Membership.Application
                                                                         .AddEndpoints(
                                                                             WcfEndpoint.BoundTo(netTcpBinding).At(string.Format("net.tcp://localhost:{1}/{0}", configurer.Implementation.Name, ConfigurationManager.AppSettings["Port"])),
                                                                             WcfEndpoint.BoundTo(netNamedPipeBinding).At(string.Format("net.pipe://localhost/{0}", configurer.Implementation.Name)))
-                                                                        .PublishMetadata()))
-                                   .WithService.Select((type, baseTypes) => type.GetInterfaces().Where(i => i.IsDefined(typeof(ServiceContractAttribute), true)))
-                );
+                                                                .PublishMetadata())).WithService.Select(
+                                                                    (type, baseTypes) =>
+                                                                    type.GetInterfaces().Where(
+                                                                        i => i.IsDefined(typeof(ServiceContractAttribute), true))));
         }
     }
 }

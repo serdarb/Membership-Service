@@ -35,7 +35,6 @@ namespace Membership.Data
         public bool IsApproved { get; set; }
         public bool IsCompany { get; set; }
         
-
         public User User { get; set; }
         public int? UserId { get; set; }
 
