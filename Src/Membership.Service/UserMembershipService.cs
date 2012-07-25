@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
+using System.Linq;
+using System.Threading.Tasks;
 using Membership.Contract;
 using Membership.Data;
 using Membership.Utils;
@@ -18,9 +15,6 @@ namespace Membership.Service
         private readonly SupplierEmployeeAssembler _supplierEmployeeAssembler;
         private readonly UserAssembler _userAssembler;
 
-        private static readonly ReaderWriterLockSlim _lockUserDictionary = new ReaderWriterLockSlim();
-        private static readonly ReaderWriterLockSlim _lockUserLoginDictionary = new ReaderWriterLockSlim();
-
         private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
         private ConcurrentDictionary<string, EmployeeDto> EmployeeDictionary { get; set; }
@@ -28,8 +22,8 @@ namespace Membership.Service
 
         private MembershipDB db = new MembershipDB();
 
-        public UserMembershipService(EmployeeAssembler employeeAssembler, 
-                                     SupplierEmployeeAssembler supplierEmployeeAssembler, 
+        public UserMembershipService(EmployeeAssembler employeeAssembler,
+                                     SupplierEmployeeAssembler supplierEmployeeAssembler,
                                      UserAssembler userAssembler)
         {
             _employeeAssembler = employeeAssembler;
@@ -41,24 +35,41 @@ namespace Membership.Service
             SupplierEmployeeDictionary = new ConcurrentDictionary<string, SupplierEmployeeDto>();
             UserLoginDictionary = new ConcurrentDictionary<string, string>();
 
-            var employees = db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
-            foreach (var employee in employees)
+            var userLogin = db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
+            foreach (var user in userLogin)
             {
-                EmployeeDictionary.TryAdd(employee.Email, _employeeAssembler.Assemble(employee));
-            }
-
-            var supplierEmployees = db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
-            foreach (var supplierEmployee in supplierEmployees)
-            {
-                SupplierEmployeeDictionary.TryAdd(supplierEmployee.Email, _supplierEmployeeAssembler.Assemble(supplierEmployee));
-            }
-
-            var users = db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
-            foreach (var user in users)
-            {
-                UserDictionary.TryAdd(user.Email, _userAssembler.Assemble(user));
                 UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
             }
+
+            var usersTask = new Task(() =>
+            {
+                var users = db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
+
+                foreach (var user in users)
+                {
+                    UserDictionary.TryAdd(user.Email, _userAssembler.Assemble(user));
+                }
+            });
+            usersTask.Start();
+
+            var employeesTask = new Task(() =>
+            {
+                var employees = db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
+                var supplierEmployees = db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
+
+                foreach (var employee in employees)
+                {
+                    EmployeeDictionary.TryAdd(employee.Email, _employeeAssembler.Assemble(employee));
+                }
+
+                foreach (var supplierEmployee in supplierEmployees)
+                {
+                    SupplierEmployeeDictionary.TryAdd(supplierEmployee.Email, _supplierEmployeeAssembler.Assemble(supplierEmployee));
+                }
+            });
+            employeesTask.Start();
+
+            Task.WaitAll(usersTask, employeesTask);
         }
 
         public bool AuthUser(string userName, string password)
@@ -69,14 +80,12 @@ namespace Membership.Service
                 var chyptographyHelper = new CryptographyHelper();
                 var passhwordHash = chyptographyHelper.SHA256Hasher(password);
 
-                _lockUserLoginDictionary.EnterReadLock();
                 auth = UserLoginDictionary[userName] == passhwordHash;
-                _lockUserLoginDictionary.ExitReadLock();
             }
 
             return auth;
         }
-        
+
         public int CreateUser(UserDto dto)
         {
             if (!DoesUserEmailExists(dto.Email))
@@ -116,15 +125,10 @@ namespace Membership.Service
                 var user = db.Users.FirstOrDefault(x => x.Email == dto.Email);
                 if (user != null)
                 {
-                    _lockUserLoginDictionary.EnterWriteLock();
                     UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
-                    _lockUserLoginDictionary.ExitWriteLock();
-                    
-                    var userDto = _userAssembler.Assemble(user);
 
-                    _lockUserDictionary.EnterWriteLock();
+                    var userDto = _userAssembler.Assemble(user);
                     UserDictionary.TryAdd(user.Email, userDto);
-                    _lockUserDictionary.ExitWriteLock();
 
                     return user.Id;
                 }
@@ -132,14 +136,10 @@ namespace Membership.Service
 
             return 0;
         }
-        
+
         public bool DoesUserEmailExists(string email)
         {
-            _lockUserLoginDictionary.EnterReadLock();
-            var exits = UserLoginDictionary.ContainsKey(email);
-            _lockUserLoginDictionary.ExitReadLock();
-
-            return exits;
+            return UserLoginDictionary.ContainsKey(email); ;
         }
 
         public bool DeleteUser(string email)
@@ -166,15 +166,15 @@ namespace Membership.Service
             if (DoesUserEmailExists(email))
             {
                 var guid = Guid.NewGuid().ToString().Replace("-", "");
-                
+
                 var user = db.Users.First(x => x.Email == email);
                 user.UpdatedOn = DateTime.Now;
                 user.LastUpdatedBy = user.Id;
                 user.PasswordResetToken = guid;
                 user.PasswordResetRequestedOn = DateTime.Now;
-                
+
                 db.SaveChanges();
-                
+
                 //todo: send password reset mail
 
                 return true;
@@ -196,14 +196,9 @@ namespace Membership.Service
                     user.UpdatedOn = DateTime.Now;
 
                     db.SaveChanges();
-                    
-                    _lockUserDictionary.EnterWriteLock();
-                    UserDictionary[email] = _userAssembler.Assemble(user);
-                    _lockUserDictionary.ExitWriteLock();
 
-                    _lockUserLoginDictionary.EnterWriteLock();
+                    UserDictionary[email] = _userAssembler.Assemble(user);
                     UserLoginDictionary[email] = newPasswordHash;
-                    _lockUserLoginDictionary.ExitWriteLock();
 
                     return true;
                 }
@@ -237,9 +232,7 @@ namespace Membership.Service
             UserDto user = null;
             if (DoesUserEmailExists(email))
             {
-                _lockUserDictionary.EnterReadLock();
                 user = UserDictionary[email];
-                _lockUserDictionary.ExitReadLock();
             }
 
             return user;

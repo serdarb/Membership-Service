@@ -16,6 +16,8 @@ namespace Membership.Data
             MetaInit.InsertCounty(context);
             MetaInit.InsertUsers(context);
 
+            context.SaveChanges();
+
             base.Seed(context);
         }
     }

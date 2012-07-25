@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ServiceProcess;
 using System.Text;
+using Membership.Data;
 
 namespace Membership.Application
 {
@@ -10,7 +12,8 @@ namespace Membership.Application
         static void Main(string[] args)
         {
             if (Environment.UserInteractive)
-            {
+           {
+
                 Bootstrapper.Initialize();
                 Console.WriteLine("Membership.Server is ready!");
 

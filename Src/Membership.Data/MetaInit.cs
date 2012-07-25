@@ -68,12 +68,12 @@ namespace Membership.Data
                 LastUpdatedBy = 1
             });
         }
-        
+
         public static void InsertLogEvent(MembershipDB context)
         {
             AddLogEvent("Programatic Update", "A data manipulation via code", context);
             AddLogEvent("Admin Panel Data Update", "An update, insert or delete action occured", context);
-      
+
             context.SaveChanges();
         }
 
@@ -111,7 +111,7 @@ namespace Membership.Data
                 LastUpdatedBy = 1
             });
         }
-        
+
         public static void InsertCity(MembershipDB context)
         {
             var marmara = context.GeoZones.First(x => x.Name == "Marmara");
@@ -1303,6 +1303,11 @@ namespace Membership.Data
         {
             AddUser("Programatic", "Admin", "admin@admin.com", "password", DateTime.Now, "Man", true, context);
             AddUser("Hüseyin Serdar", "Büyüktemiz", "hserdarb@gmail.com", "password", new DateTime(1982, 8, 2), "Man", true, context);
+
+            for (int i = 1; i < 1001; i++)
+            {
+                AddUser(string.Format("test{0}", i), "user", string.Format("test{0}@test.com", i), "password", DateTime.Now, "Man", true, context);
+            }
 
             context.SaveChanges();
         }
