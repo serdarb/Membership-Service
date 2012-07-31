@@ -5,14 +5,6 @@
 
     public class MembershipDB : DbContext
     {
-        public MembershipDB()
-            : base(ConfigurationManager.ConnectionStrings["MembershipDB"].ConnectionString)
-        { }
-
-        public MembershipDB(string nameOrConnectionString)
-            : base(nameOrConnectionString)
-        { }
-
         public DbSet<User> Users { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<Gender> Genders { get; set; }
@@ -41,11 +33,6 @@
 
         public DbSet<Affiliate> Affiliates { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            Database.SetInitializer(new MembershipDBDatabaseInitializer());
-            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<MembershipDB, MigrationConfiguration>());
-            base.OnModelCreating(modelBuilder);
-        }
+       
     }
 }

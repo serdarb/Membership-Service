@@ -12,9 +12,13 @@ namespace Membership.Application
         static void Main(string[] args)
         {
             if (Environment.UserInteractive)
-           {
+            {
 
                 Bootstrapper.Initialize();
+
+#warning test migration
+                DbMigrationInstaller.Configure();
+
                 Console.WriteLine("Membership.Server is ready!");
 
                 Console.ReadLine();
