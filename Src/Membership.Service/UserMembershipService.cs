@@ -268,6 +268,17 @@
             return false;
         }
 
+        /// <summary>
+        /// The add address.
+        /// </summary>
+        /// <param name="dto">
+        /// The dto.
+        /// </param>
+        /// <returns>
+        /// The System.Boolean.
+        /// </returns>
+        /// <exception cref="NotImplementedException">
+        /// </exception>
         public bool AddAddress(AddressDto dto)
         {
             throw new NotImplementedException();
