@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67BA6028-A0E5-48FD-AF9A-D481518FAA0C}</ProjectGuid>
+    <ProjectGuid>{25C1C7FB-CFF8-4BF1-AAA7-423BEBF18754}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Membership.Data</RootNamespace>
@@ -35,43 +35,52 @@
       <HintPath>..\..\packages\EntityFramework.4.3.1\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.Entity" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbMigrationInstaller.cs" />
     <Compile Include="Entity\Address.cs" />
+    <Compile Include="Entity\AdminMenuItem.cs" />
+    <Compile Include="Entity\AdminMenuItemGroup.cs" />
+    <Compile Include="Entity\AdminMenuItemRole.cs" />
     <Compile Include="Entity\AdminRole.cs" />
     <Compile Include="Entity\Affiliate.cs" />
     <Compile Include="Entity\BaseEntity.cs" />
     <Compile Include="Entity\City.cs" />
+    <Compile Include="Entity\SupplierEmployeeAdminRole.cs" />
     <Compile Include="Entity\Country.cs" />
     <Compile Include="Entity\County.cs" />
     <Compile Include="Entity\Employee.cs" />
     <Compile Include="Entity\EmployeeAdminRole.cs" />
     <Compile Include="Entity\Gender.cs" />
     <Compile Include="Entity\GeoZone.cs" />
+    <Compile Include="Entity\PointHistory.cs" />
+    <Compile Include="Entity\PointType.cs" />
     <Compile Include="Entity\Log.cs" />
     <Compile Include="Entity\LogEvent.cs" />
-    <Compile Include="MembershipDB.cs" />
-    <Compile Include="Entity\AdminMenuItem.cs" />
-    <Compile Include="Entity\AdminMenuItemGroup.cs" />
-    <Compile Include="Entity\AdminMenuItemRole.cs" />
     <Compile Include="Entity\Phone.cs" />
-    <Compile Include="Migrations\201207292055460_firstinstall.cs" />
-    <Compile Include="Migrations\201207292055460_firstinstall.Designer.cs">
-      <DependentUpon>201207292055460_firstinstall.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entity\Supplier.cs" />
     <Compile Include="Entity\SupplierEmployee.cs" />
     <Compile Include="Entity\User.cs" />
     <Compile Include="Entity\UserType.cs" />
+    <Compile Include="MembershipDB.cs" />
+    <Compile Include="MigrationsInstaller.cs" />
+    <Compile Include="Migrations\201208051308142_initialCreate.cs" />
+    <Compile Include="Migrations\201208051308142_initialCreate.Designer.cs">
+      <DependentUpon>201208051308142_initialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201208051401090_indexes.cs" />
+    <Compile Include="Migrations\201208051401090_indexes.Designer.cs">
+      <DependentUpon>201208051401090_indexes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201208051459144_requiredFieldUpdate.cs" />
+    <Compile Include="Migrations\201208051459144_requiredFieldUpdate.Designer.cs">
+      <DependentUpon>201208051459144_requiredFieldUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

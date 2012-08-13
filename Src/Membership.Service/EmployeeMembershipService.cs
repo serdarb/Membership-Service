@@ -9,6 +9,8 @@
     /// </summary>
     public class EmployeeMembershipService : IEmployeeMembershipService
     {
+
+
         public bool AuthEmployee(string userName, string password)
         {
             throw new NotImplementedException();

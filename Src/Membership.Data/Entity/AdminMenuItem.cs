@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Membership.Data
+﻿namespace Membership.Data.Entity
 {
+    using System;
+
     [Serializable]
     public class AdminMenuItem : BaseEntity 
     {

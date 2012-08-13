@@ -1,7 +1,7 @@
-using System.Runtime.Serialization;
-
 namespace Membership.Contract
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class CountryDto : BaseDto
     {

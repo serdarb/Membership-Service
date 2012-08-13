@@ -1,8 +1,8 @@
-using System;
-using System.Runtime.Serialization;
-
 namespace Membership.Contract
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class BaseDto
     {
@@ -12,7 +12,7 @@ namespace Membership.Contract
         [DataMember]
         public string Comment { get; set; }
         [DataMember]
-        public int LastUpdatedBy { get; set; }
+        public int UpdatedBy { get; set; }
         [DataMember]
         public DateTime CreatedOn { get; set; }
         [DataMember]

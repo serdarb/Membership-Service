@@ -38,6 +38,14 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\AdminMenuItemDto.cs" />
+    <Compile Include="Dto\AdminMenuItemGroupDto.cs" />
+    <Compile Include="Dto\AdminMenuItemRoleDto.cs" />
+    <Compile Include="Dto\AdminRoleDto.cs" />
+    <Compile Include="Dto\AffiliateDto.cs" />
+    <Compile Include="Dto\EmployeeAdminRoleDto.cs" />
+    <Compile Include="Dto\LogDto.cs" />
+    <Compile Include="Dto\LogEventDto.cs" />
     <Compile Include="ISupplierEmployeeMembershipService.cs" />
     <Compile Include="IEmployeeMembershipService.cs" />
     <Compile Include="Dto\AddressDto.cs" />

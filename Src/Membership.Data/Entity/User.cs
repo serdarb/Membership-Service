@@ -1,13 +1,17 @@
-using System;
-
-namespace Membership.Data
+namespace Membership.Data.Entity
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
     [Serializable]
     public class User : BaseEntity
     {
+        [Required(AllowEmptyStrings = false), StringLength(255)]
         public string Email { get; set; }
+        [Required(AllowEmptyStrings = false)]
         public string PasswordHash { get; set; }
 
+        [Required(AllowEmptyStrings = false)]
         public string Names { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -18,6 +22,8 @@ namespace Membership.Data
         public string Website { get; set; }
         public string FacebookId { get; set; }
         public string TwitterId { get; set; }
+        public string PinterestId { get; set; }
+        public string SkypeId { get; set; }
         public string PhotoUrl { get; set; }
 
         public bool IsActive { get; set; }
@@ -29,7 +35,7 @@ namespace Membership.Data
 
         public string AffiliateSlug { get; set; }
         public string RefererSource { get; set; }
-        
+
         public string LastInvoiceAddressId { get; set; }
         public string LastShippingAddressId { get; set; }
 

@@ -1,7 +1,7 @@
-using System;
-
-namespace Membership.Data
+namespace Membership.Data.Entity
 {
+    using System;
+
     [Serializable]
     public class Address : BaseEntity
     {
@@ -37,7 +37,7 @@ namespace Membership.Data
         
         public User User { get; set; }
         public int? UserId { get; set; }
-
+        
         public Supplier Supplier { get; set; }
         public int? SupplierId { get; set; }
         

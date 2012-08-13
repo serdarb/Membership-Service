@@ -1,4 +1,5 @@
 ﻿using System.ServiceModel;
+using System.Collections.Generic;
 
 namespace Membership.Contract
 {
@@ -15,14 +16,32 @@ namespace Membership.Contract
         bool DoesUserEmailExists(string email);
 
         [OperationContract]
+        int GetUserIdByEmail(string email);
+        
+        [OperationContract]
+        string GetUserEmailById(string id);
+
+        [OperationContract]
+        UserDto GetUserById(int id);
+
+        [OperationContract]
+        UserDto GetUser(string email);
+
+        [OperationContract]
         bool DeleteUser(string email);
 
         [OperationContract]
-        bool RequestPasswordResetForUser(string email);
+        bool RequestPasswordReset(string email);
 
         [OperationContract]
-        bool ChangePasswordForUser(string email, string newPasswordHash);
+        bool ChangePassword(string email, string newPasswordHash);
 
+        [OperationContract]
+        bool InviteUser(string refererUserEmail, string invitedEmail);
+
+        [OperationContract]
+        bool ChangeAffiliateSlug(string slug);
+                
         [OperationContract]
         bool AddAddress(AddressDto dto);
 
@@ -30,12 +49,28 @@ namespace Membership.Contract
         bool AddPhone(PhoneDto dto);
 
         [OperationContract]
-        bool InviteUser(string refererUserEmail, string invitedEmail);
+        bool UpdateAddress(AddressDto dto);
 
         [OperationContract]
-        UserDto GetUserById(int id);
+        bool UpdatePhone(PhoneDto dto);
 
         [OperationContract]
-        UserDto GetUser(string email);
+        bool DeleteAddress(AddressDto dto);
+
+        [OperationContract]
+        bool DeletePhone(PhoneDto dto);
+
+        [OperationContract]
+        List<PhoneDto> GetPhones(string email);
+
+        [OperationContract]
+        List<PhoneDto> GetPhonesByUserId(int id);
+
+        [OperationContract]
+        List<AddressDto> GetAddresses(string email);
+
+        [OperationContract]
+        List<AddressDto> GetAddressesByUserId(int id);
+      
     }
 }

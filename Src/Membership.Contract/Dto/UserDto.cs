@@ -1,8 +1,8 @@
-using System;
-using System.Runtime.Serialization;
-
 namespace Membership.Contract
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class UserDto : BaseDto
     {
@@ -63,6 +63,9 @@ namespace Membership.Contract
 
         [DataMember]
         public string NewPasswordHash { get; set; }
-        
+
+        [DataMember]
+        public string PinterestId { get; set; }
+
     }
 }

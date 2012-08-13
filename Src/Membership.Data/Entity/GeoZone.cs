@@ -1,10 +1,12 @@
-using System;
-
-namespace Membership.Data
+namespace Membership.Data.Entity
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
     [Serializable]
     public class GeoZone : BaseEntity
     {
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
         public Country Country { get; set; }

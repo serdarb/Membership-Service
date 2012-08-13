@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Membership.Data
+﻿namespace Membership.Data.Entity
 {
+    using System;
+
     [Serializable]
     public class EmployeeAdminRole : BaseEntity
     {
@@ -10,5 +10,7 @@ namespace Membership.Data
 
         public AdminRole AdminRole { get; set; }
         public int? AdminRoleId { get; set; }
+
+        public string Expression { get; set; }
     }
 }

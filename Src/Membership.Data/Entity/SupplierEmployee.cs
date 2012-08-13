@@ -1,7 +1,8 @@
-using System;
-
-namespace Membership.Data
+namespace Membership.Data.Entity
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
     [Serializable]
     public class SupplierEmployee : BaseEntity
     {
@@ -11,6 +12,7 @@ namespace Membership.Data
         public Supplier Supplier { get; set; }
         public int? SupplierId { get; set; }
 
+        [Required(AllowEmptyStrings = false), StringLength(255)]
         public string Email { get; set; }
         public string PrimaryPhone { get; set; }
         

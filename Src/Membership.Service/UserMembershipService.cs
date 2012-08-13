@@ -10,7 +10,8 @@
 
     using Membership.Contract;
     using Membership.Data;
-    using Membership.Utils.Encryption;
+    using Membership.Data.Entity;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The user membership service.
@@ -118,7 +119,7 @@
                                  {
                                      CreatedOn = DateTime.Now,
                                      UpdatedOn = DateTime.Now,
-                                     LastUpdatedBy = 1,
+                                     UpdatedBy = 1,
                                      IsActive = true,
                                      IsMailingActive = true,
                                      IsOtherMailingActive = true,
@@ -183,13 +184,13 @@
         /// </returns>
         public bool DeleteUser(string email)
         {
-            if (!this.UserLoginDictionary.ContainsKey(email))
+            if (this.DoesUserEmailExists(email))
             {
                 var user = this.db.Users.FirstOrDefault(x => x.Email == email);
                 if (user != null)
                 {
                     user.DeletedOn = DateTime.Now;
-                    user.LastUpdatedBy = user.Id;
+                    user.UpdatedBy = user.Id;
 
                     this.db.SaveChanges();
 
@@ -209,7 +210,7 @@
         /// <returns>
         /// The System.Boolean.
         /// </returns>
-        public bool RequestPasswordResetForUser(string email)
+        public bool RequestPasswordReset(string email)
         {
             if (this.DoesUserEmailExists(email))
             {
@@ -217,7 +218,7 @@
 
                 var user = this.db.Users.First(x => x.Email == email);
                 user.UpdatedOn = DateTime.Now;
-                user.LastUpdatedBy = user.Id;
+                user.UpdatedBy = user.Id;
                 user.PasswordResetToken = guid;
                 user.PasswordResetRequestedOn = DateTime.Now;
 
@@ -244,7 +245,7 @@
         /// <returns>
         /// The System.Boolean.
         /// </returns>
-        public bool ChangePasswordForUser(string email, string newPasswordHash)
+        public bool ChangePassword(string email, string newPasswordHash)
         {
             if (this.DoesUserEmailExists(email))
             {
@@ -252,7 +253,7 @@
                 if (user != null)
                 {
                     user.PasswordHash = newPasswordHash;
-                    user.LastUpdatedBy = user.Id;
+                    user.UpdatedBy = user.Id;
                     user.UpdatedOn = DateTime.Now;
 
                     this.db.SaveChanges();
@@ -281,12 +282,14 @@
         /// </exception>
         public bool AddAddress(AddressDto dto)
         {
-            throw new NotImplementedException();
+            db.Addresses.Add(Mapper.Map<AddressDto, Address>(dto));
+            return db.SaveChanges() > 0;
         }
 
         public bool AddPhone(PhoneDto dto)
         {
-            throw new NotImplementedException();
+            db.Phones.Add(Mapper.Map<PhoneDto, Phone>(dto));
+            return db.SaveChanges() > 0;
         }
 
         public bool InviteUser(string refererUserEmail, string invitedEmail)
@@ -296,7 +299,13 @@
 
         public UserDto GetUserById(int id)
         {
-            throw new NotImplementedException();
+            UserDto user = null;
+            if (this.UserByIdDictionary.ContainsKey(id))
+            {
+                user = this.UserByIdDictionary[id];
+            }
+
+            return user;
         }
 
         /// <summary>
@@ -317,6 +326,62 @@
             }
 
             return user;
+        }
+
+        public bool ChangeAffiliateSlug(string slug)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public int GetUserIdByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetUserEmailById(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdateAddress(AddressDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdatePhone(PhoneDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DeleteAddress(AddressDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DeletePhone(PhoneDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Collections.Generic.List<PhoneDto> GetPhones(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<PhoneDto> GetPhonesByUserId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<AddressDto> GetAddresses(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<AddressDto> GetAddressesByUserId(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
