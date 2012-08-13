@@ -19,7 +19,7 @@ namespace Membership.Contract
         int GetUserIdByEmail(string email);
         
         [OperationContract]
-        string GetUserEmailById(string id);
+        string GetUserEmailById(int id);
 
         [OperationContract]
         UserDto GetUserById(int id);

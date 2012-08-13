@@ -336,12 +336,21 @@
 
         public int GetUserIdByEmail(string email)
         {
-            throw new NotImplementedException();
-        }
 
-        public string GetUserEmailById(string id)
+            if (this.DoesUserEmailExists(email))
+            {
+                return this.UserDictionary[email].Id;                 
+              
+            }
+            return 0;
+        }
+        public string GetUserEmailById(int id)
         {
-            throw new NotImplementedException();
+            if (this.UserByIdDictionary.ContainsKey(id))
+            {
+                return this.UserByIdDictionary[id].Email;
+            }   
+            return null;
         }
 
         public bool UpdateAddress(AddressDto dto)
