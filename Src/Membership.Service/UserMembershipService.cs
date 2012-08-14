@@ -362,19 +362,24 @@
                 address.Name = dto.Name;
                 address.AddressText = dto.AddressText;
                 address.District = dto.District;
+                address.CountyId = dto.County.Id;
+                address.CityId = dto.City.Id;
+                address.CountryId = dto.Country.Id;
                 address.PostalCode = dto.PostalCode;
                 address.CompanyName = dto.CompanyName;
                 address.Coordinates = dto.Coordinates;
                 address.PersonName = dto.PersonName;
-                address.PrimaryPhone = dto.PrimaryPhone;               
+                address.PrimaryPhone = dto.PrimaryPhone;
                 address.TaxNumber = dto.TaxNumber;
                 address.TaxOffice = dto.TaxOffice;
                 address.IsApproved = dto.IsApproved;
                 address.IsCompany = dto.IsCompany;
                 address.Comment = dto.Comment;
+                address.UpdatedOn = DateTime.Now;
+                address.UpdatedBy = dto.UpdatedBy;
 
                 db.SaveChanges();
-                   
+
                 return true;
             }
 
@@ -391,9 +396,10 @@
                 phone.Telephone = dto.Telephone;
                 phone.IsFax = dto.IsFax;
                 phone.IsPrimary = dto.IsPrimary;
-                phone.UpdatedOn = DateTime.Now;
                 phone.UpdatedBy = dto.UpdatedBy;
                 phone.Comment = dto.Comment;
+                phone.UpdatedOn = DateTime.Now;
+                phone.UpdatedBy = dto.UpdatedBy;
 
                 db.SaveChanges();
 
@@ -405,12 +411,33 @@
 
         public bool DeleteAddress(AddressDto dto)
         {
-            throw new NotImplementedException();
+            var address = db.Addresses.First(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (address != null)
+            {
+                address.DeletedOn = DateTime.Now;
+                address.UpdatedBy = dto.UpdatedBy;
+                
+                db.SaveChanges();
+
+                return true;
+            }
+
+            return false;
+
         }
 
         public bool DeletePhone(PhoneDto dto)
         {
-            throw new NotImplementedException();
+            var phone = db.Phones.First(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (phone != null)
+            {
+                phone.DeletedOn = DateTime.Now;
+                phone.UpdatedBy = dto.UpdatedBy;
+                db.SaveChanges();
+            }
+
+            return false;
+
         }
 
         public System.Collections.Generic.List<PhoneDto> GetPhones(string email)
