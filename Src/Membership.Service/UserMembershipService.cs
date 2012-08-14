@@ -339,8 +339,8 @@
 
             if (this.DoesUserEmailExists(email))
             {
-                return this.UserDictionary[email].Id;                 
-              
+                return this.UserDictionary[email].Id;
+
             }
             return 0;
         }
@@ -349,18 +349,44 @@
             if (this.UserByIdDictionary.ContainsKey(id))
             {
                 return this.UserByIdDictionary[id].Email;
-            }   
+            }
             return null;
         }
 
         public bool UpdateAddress(AddressDto dto)
         {
-            throw new NotImplementedException();
+            var address = db.Addresses.First(x => x.Id == dto.User.Id);
+
+            if (address != null)
+            {
+                db.Addresses.Add(Mapper.Map<AddressDto, Address>(dto));
+                db.SaveChanges();
+                return true;
+            }
+
+            return false;
+
         }
 
         public bool UpdatePhone(PhoneDto dto)
         {
-            throw new NotImplementedException();
+            var phone = db.Phones.First(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id);
+
+            if (phone != null)
+            {
+                phone.Telephone = dto.Telephone;
+                phone.IsFax = dto.IsFax;
+                phone.IsPrimary = dto.IsPrimary;
+                phone.UpdatedOn = DateTime.Now;
+                phone.UpdatedBy = dto.UpdatedBy;
+                phone.Comment = dto.Comment;
+
+                db.SaveChanges();
+
+                return true;
+            }
+
+            return false;
         }
 
         public bool DeleteAddress(AddressDto dto)
@@ -375,22 +401,66 @@
 
         public System.Collections.Generic.List<PhoneDto> GetPhones(string email)
         {
-            throw new NotImplementedException();
+            var id = GetUserIdByEmail(email);
+
+            var phones = db.Phones.Include(x => x.User)
+                .Where(x => x.UserId == id);
+
+            var dtos = new List<PhoneDto>();
+            foreach (var phone in phones)
+            {
+                dtos.Add(Mapper.Map<Phone, PhoneDto>(phone));
+            }
+
+            return dtos;
         }
 
         public List<PhoneDto> GetPhonesByUserId(int id)
         {
-            throw new NotImplementedException();
+            var phones = db.Phones.Include(x => x.User)
+                .Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
+
+            var dtos = new List<PhoneDto>();
+            foreach (var phone in phones)
+            {
+                dtos.Add(Mapper.Map<Phone, PhoneDto>(phone));
+            }
+
+            return dtos;
         }
 
         public List<AddressDto> GetAddresses(string email)
         {
-            throw new NotImplementedException();
+            int id = GetUserIdByEmail(email);
+            var addresses = db.Addresses.Include(x => x.User)
+                        .Include(x => x.County)
+                        .Include(x => x.City)
+                        .Where(x => x.DeletedOn.HasValue == false && x.Id == id);
+
+            var dtos = new List<AddressDto>();
+            foreach (var address in addresses)
+            {
+                dtos.Add(Mapper.Map<Address, AddressDto>(address));
+            }
+
+            return dtos;
         }
 
         public List<AddressDto> GetAddressesByUserId(int id)
         {
-            throw new NotImplementedException();
+            var addresses = db.Addresses.Include(x => x.User)
+                        .Include(x => x.County)
+                        .Include(x => x.City)
+                        .Where(x => x.DeletedOn.HasValue == false && x.User.Id == id);
+
+            var dtos = new List<AddressDto>();
+
+            foreach (var address in addresses)
+            {
+                dtos.Add(Mapper.Map<Address, AddressDto>(address));
+            }
+
+            return dtos;
         }
     }
 }
