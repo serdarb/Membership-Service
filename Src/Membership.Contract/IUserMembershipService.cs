@@ -39,8 +39,6 @@ namespace Membership.Contract
         [OperationContract]
         bool InviteUser(string refererUserEmail, string invitedEmail);
 
-        [OperationContract]
-        bool ChangeAffiliateSlug(string slug);
                 
         [OperationContract]
         bool AddAddress(AddressDto dto);

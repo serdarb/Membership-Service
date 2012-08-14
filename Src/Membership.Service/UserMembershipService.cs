@@ -328,12 +328,6 @@
             return user;
         }
 
-        public bool ChangeAffiliateSlug(string slug)
-        {
-            throw new NotImplementedException();
-        }
-
-
         public int GetUserIdByEmail(string email)
         {
 
