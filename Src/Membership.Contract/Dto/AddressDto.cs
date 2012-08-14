@@ -52,5 +52,8 @@ namespace Membership.Contract
         public SupplierDto Supplier { get; set; }
         [DataMember]
         public SupplierEmployeeDto SupplierEmployee { get; set; }
+        [DataMember]
+        public EmployeeDto Employee { get; set; }
+
     }
 }

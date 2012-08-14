@@ -136,6 +136,7 @@
                                      Website = dto.Website,
                                      IdentityNumber = dto.IdentityNumber,
                                      AffiliateSlug = dto.AffiliateSlug
+                                     
                                  });
                 this.db.SaveChanges();
 
@@ -303,25 +304,27 @@
             {
                 this.db.Addresses.Add(new Address
                     {
-                        Name=dto.Name,
-                        AddressText=dto.AddressText,
-                        District=dto.District,
-                        CountyId=dto.County.Id,
-                        CityId=dto.City.Id,
-                        GeoZoneId=dto.GeoZone.Id,
-                        CountryId=dto.Country.Id,
-                        PostalCode=dto.PostalCode,
-                        Coordinates=dto.Coordinates,
-                        PersonName=dto.PersonName,
-                        PrimaryPhone=dto.PrimaryPhone,
-                        CompanyName=dto.CompanyName,
-                        TaxNumber=dto.TaxNumber,
-                        TaxOffice=dto.TaxOffice,
-                        IsApproved=dto.IsApproved,
-                        IsCompany=dto.IsCompany,
-                        UserId=dto.User.Id,
-                        SupplierId=dto.Supplier.Id,
-                        SupplierEmployeeId=dto.SupplierEmployee.Id
+                        Name = dto.Name,
+                        AddressText = dto.AddressText,
+                        District = dto.District,
+                        CountyId = dto.County.Id,
+                        CityId = dto.City.Id,
+                        GeoZoneId = dto.GeoZone.Id,
+                        CountryId = dto.Country.Id,
+                        PostalCode = dto.PostalCode,
+                        Coordinates = dto.Coordinates,
+                        PersonName = dto.PersonName,
+                        PrimaryPhone = dto.PrimaryPhone,
+                        CompanyName = dto.CompanyName,
+                        TaxNumber = dto.TaxNumber,
+                        TaxOffice = dto.TaxOffice,
+                        IsApproved = dto.IsApproved,
+                        IsCompany = dto.IsCompany,
+                        UserId = dto.User.Id,
+                        UpdatedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now,
+                        UpdatedBy = dto.UpdatedBy,
+                        Comment = dto.Comment
                     });
                 this.db.SaveChanges();
                 return true;

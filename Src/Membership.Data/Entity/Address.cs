@@ -43,5 +43,8 @@ namespace Membership.Data.Entity
         
         public SupplierEmployee SupplierEmployee { get; set; }
         public int? SupplierEmployeeId { get; set; }
+
+        public Employee Employee { get; set; }
+        public int? EmployeeId { get; set; }
     }
 }
