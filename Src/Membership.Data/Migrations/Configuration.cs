@@ -1,14 +1,13 @@
 ﻿namespace Membership.Data.Migrations
 {
     using System;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
     using Membership.Data.Entity;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Membership.Data.MembershipDB>
+    internal sealed class Configuration : DbMigrationsConfiguration<MembershipDB>
     {
-        protected override void Seed(Membership.Data.MembershipDB context)
+        protected override void Seed(MembershipDB context)
         {
             context.Genders.AddOrUpdate(
                 new Gender { CreatedOn = DateTime.Now, UpdatedOn = DateTime.Now, UpdatedBy = 1, Name = "Erkek" },
@@ -260,13 +259,13 @@
             AddCounty("SULTANDAGI", afyonKarahisar, context);
             AddCounty("SUHUT", afyonKarahisar, context);
 
-            AddCounty("DIYADIN", agri, context);
-            AddCounty("DOGUBAYAZIT", agri, context);
-            AddCounty("ELESKIRT", agri, context);
-            AddCounty("HAMUR", agri, context);
-            AddCounty("PATNOS", agri, context);
-            AddCounty("TASLIÇAY", agri, context);
-            AddCounty("TUTAK", agri, context);
+            AddCounty("Diyadin", agri, context);
+            AddCounty("Doğubayazıt", agri, context);
+            AddCounty("Eleskirt", agri, context);
+            AddCounty("Hamur", agri, context);
+            AddCounty("Patnus", agri, context);
+            AddCounty("Taslıçay", agri, context);
+            AddCounty("Tutak", agri, context);
 
             AddCounty("GÖYNÜCEK", amasya, context);
             AddCounty("GÜMÜSHACIKÖY", amasya, context);
@@ -1190,13 +1189,11 @@
             AddCounty("Gümüşova", duzce, context);
             AddCounty("Kaynaşlı", duzce, context);
             AddCounty("Yığılca", duzce, context);
-
-            var userType = context.UserTypes.Single(z => z.Name == "Müşteri");
-            var gender = context.Genders.Single(z => z.Name == "Diğer");
+            
             context.Users.AddOrUpdate(new User
             {
-                UserTypeId = userType.Id,
-                GenderId = gender.Id,
+                UserTypeId = 1, // Müşteri
+                GenderId = 4, // Diğer
                 Email = "admin@mail.com",
                 PasswordHash = "passwordhash",
                 Names = "Programatic Admin",

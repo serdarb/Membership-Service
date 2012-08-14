@@ -8,7 +8,7 @@ namespace Membership.Contract
     {
         [OperationContract]
         bool AuthUser(string userName, string password);
-       
+
         [OperationContract]
         int CreateUser(UserDto dto);
 
@@ -17,7 +17,7 @@ namespace Membership.Contract
 
         [OperationContract]
         int GetUserIdByEmail(string email);
-        
+
         [OperationContract]
         string GetUserEmailById(int id);
 
@@ -34,12 +34,14 @@ namespace Membership.Contract
         bool RequestPasswordReset(string email);
 
         [OperationContract]
+        bool IsPasswordResetRequestValid(string email, string guid);
+
+        [OperationContract]
         bool ChangePassword(string email, string newPasswordHash);
 
         [OperationContract]
         bool InviteUser(string refererUserEmail, string invitedEmail);
 
-                
         [OperationContract]
         bool AddAddress(AddressDto dto);
 
@@ -69,6 +71,5 @@ namespace Membership.Contract
 
         [OperationContract]
         List<AddressDto> GetAddressesByUserId(int id);
-      
     }
 }

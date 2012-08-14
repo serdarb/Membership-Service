@@ -16,8 +16,7 @@ namespace Membership.Application
         {
             get
             {
-                if (logger == null) logger = NullLogger.Instance;
-                return logger;
+                return this.logger ?? (this.logger = NullLogger.Instance);
             }
             set { logger = value; }
         }
@@ -36,14 +35,14 @@ namespace Membership.Application
 
         private string CreateInvocationLogString(IInvocation invocation)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendFormat("Called: {0}.{1} (", invocation.TargetType.Name, invocation.Method.Name);
             foreach (var argument in invocation.Arguments)
             {
                 string argumentDescription = argument == null ? "null" : GetPropertiesAndValues(argument);
                 sb.Append(argumentDescription).Append(",");
             }
-            if (invocation.Arguments.Count() > 0) sb.Length--;
+            if (invocation.Arguments.Any()) sb.Length--;
             sb.Append(")");
             return sb.ToString();
         }
@@ -54,7 +53,12 @@ namespace Membership.Application
             var propertyInfos = argument.GetType().GetProperties();
             foreach (var propertyInfo in propertyInfos)
             {
-                str.AppendFormat(" P: {0} # V: {1} ", propertyInfo.Name, propertyInfo.GetValue(argument, null));
+                try
+                {
+                    str.AppendFormat(" {0} # {1} ", propertyInfo.Name, propertyInfo.GetValue(argument, null));
+
+                }
+                catch { }
             }
 
             return str.ToString();

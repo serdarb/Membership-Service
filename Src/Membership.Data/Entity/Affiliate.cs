@@ -15,6 +15,6 @@ namespace Membership.Data.Entity
 
         public string RefererSource { get; set; }
 
-        public DateTime ActivatedOn { get; set; }
+        public DateTime? ActivatedOn { get; set; }
     }
 }

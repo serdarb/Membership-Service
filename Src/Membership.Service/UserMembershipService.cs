@@ -21,8 +21,6 @@
         private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
         private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<int, UserDto> UserByIdDictionary { get; set; }
-        private ConcurrentDictionary<string, EmployeeDto> EmployeeDictionary { get; set; }
-        private ConcurrentDictionary<string, SupplierEmployeeDto> SupplierEmployeeDictionary { get; set; }
 
         private MembershipDB db = new MembershipDB();
 
@@ -33,18 +31,24 @@
             this.UserDictionary = new ConcurrentDictionary<string, UserDto>();
             this.UserLoginDictionary = new ConcurrentDictionary<string, string>();
             this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();
-            this.EmployeeDictionary = new ConcurrentDictionary<string, EmployeeDto>();
-            this.SupplierEmployeeDictionary = new ConcurrentDictionary<string, SupplierEmployeeDto>();
 
-            var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
-            foreach (var user in userLogin)
-            {
-                this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
-            }
+            int userCount = this.db.Users.Count(x => x.DeletedOn.HasValue == false);
+            int firstTake = userCount / 2;
+            int secondTake = userCount - firstTake;
 
-            var usersTask = new Task(() =>
+            var userLoginTask = new Task(() =>
             {
-                var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false);
+                var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
+                foreach (var user in userLogin)
+                {
+                    this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
+                }
+            });
+            userLoginTask.Start();
+
+            var usersTask1 = new Task(() =>
+            {
+                var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Take(firstTake);
                 foreach (var user in users)
                 {
                     var dto = Mapper.Map<User, UserDto>(user);
@@ -52,28 +56,21 @@
                     UserByIdDictionary.TryAdd(user.Id, dto);
                 }
             });
-            usersTask.Start();
+            usersTask1.Start();
 
-            var employeesTask = new Task(() =>
+            var usersTask2 = new Task(() =>
             {
-                var employees = this.db.Employees.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false);
-                var supplierEmployees = this.db.SupplierEmployees.Include(x => x.User).Include(x => x.Supplier).Where(x => x.DeletedOn.HasValue == false);
-
-                foreach (var employee in employees)
+                var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Skip(firstTake).Take(secondTake);
+                foreach (var user in users)
                 {
-                    var dto = Mapper.Map<Employee, EmployeeDto>(employee);
-                    EmployeeDictionary.TryAdd(employee.Email, dto);
-                }
-
-                foreach (var supplierEmployee in supplierEmployees)
-                {
-                    var dto = Mapper.Map<SupplierEmployee, SupplierEmployeeDto>(supplierEmployee);
-                    SupplierEmployeeDictionary.TryAdd(supplierEmployee.Email, dto);
+                    var dto = Mapper.Map<User, UserDto>(user);
+                    UserDictionary.TryAdd(user.Email, dto);
+                    UserByIdDictionary.TryAdd(user.Id, dto);
                 }
             });
-            employeesTask.Start();
+            usersTask2.Start();
 
-            Task.WaitAll(usersTask, employeesTask);
+            Task.WaitAll(userLoginTask, usersTask1, usersTask2);
         }
 
         /// <summary>
@@ -112,14 +109,12 @@
         {
             if (!this.DoesUserEmailExists(dto.Email))
             {
-                var gender = this.db.Genders.First(x => x.Id == dto.Gender.Id);
-                var userType = this.db.UserTypes.First(x => x.Id == dto.UserType.Id);
-
                 this.db.Users.Add(new User
                                  {
                                      CreatedOn = DateTime.Now,
                                      UpdatedOn = DateTime.Now,
                                      UpdatedBy = 1,
+                                     Comment = dto.Comment,
                                      IsActive = true,
                                      IsMailingActive = true,
                                      IsOtherMailingActive = true,
@@ -130,8 +125,8 @@
                                      Email = dto.Email,
                                      PasswordHash = dto.PasswordHash,
                                      RefererSource = dto.RefererSource,
-                                     Gender = gender,
-                                     UserType = userType,
+                                     GenderId = dto.Gender.Id,
+                                     UserTypeId = dto.UserType.Id,
                                      Point = 0,
                                      VirtualMoney = 0,
                                      Birthday = dto.Birthday,
@@ -230,7 +225,29 @@
             }
 
             return false;
+        }
 
+        public bool IsPasswordResetRequestValid(string email, string guid)
+        {
+            if (this.DoesUserEmailExists(email))
+            {
+                var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email == email);
+                if (user != null)
+                {
+                    if (guid != null && user.PasswordResetToken == guid.Trim())
+                    {
+                        if (user.PasswordResetRequestedOn.HasValue)
+                        {
+                            if (user.PasswordResetRequestedOn.Value.AddDays(1) > DateTime.Now)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -288,13 +305,50 @@
 
         public bool AddPhone(PhoneDto dto)
         {
-            db.Phones.Add(Mapper.Map<PhoneDto, Phone>(dto));
-            return db.SaveChanges() > 0;
+            if (!this.db.Phones.Any(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id && x.Telephone.Trim() == dto.Telephone.Trim()))
+            {
+                this.db.Phones.Add(new Phone
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
+                    UpdatedBy = dto.User.Id,
+                    IsFax = dto.IsFax,
+                    IsPrimary = dto.IsPrimary,
+                    Comment = dto.Comment,
+                    Telephone = dto.Telephone.Trim(),
+                    UserId = dto.User.Id
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+
+            return false;
         }
 
         public bool InviteUser(string refererUserEmail, string invitedEmail)
         {
-            throw new NotImplementedException();
+            if (this.DoesUserEmailExists(refererUserEmail))
+            {
+                if (!this.db.Affiliates.Any(x => x.DeletedOn.HasValue == false && x.Email == invitedEmail))
+                {
+                    this.db.Affiliates.Add(new Affiliate
+                        {
+                            CreatedOn = DateTime.Now,
+                            UpdatedOn = DateTime.Now,
+                            UpdatedBy = this.GetUserIdByEmail(refererUserEmail),
+                            Email = invitedEmail
+                        });
+
+                    this.db.SaveChanges();
+
+                    //todo: send invite email
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public UserDto GetUserById(int id)
@@ -410,7 +464,7 @@
             {
                 address.DeletedOn = DateTime.Now;
                 address.UpdatedBy = dto.UpdatedBy;
-                
+
                 db.SaveChanges();
 
                 return true;
@@ -434,12 +488,11 @@
 
         }
 
-        public System.Collections.Generic.List<PhoneDto> GetPhones(string email)
+        public List<PhoneDto> GetPhones(string email)
         {
             var id = GetUserIdByEmail(email);
 
-            var phones = db.Phones.Include(x => x.User)
-                .Where(x => x.UserId == id);
+            var phones = db.Phones.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
 
             var dtos = new List<PhoneDto>();
             foreach (var phone in phones)
@@ -452,8 +505,7 @@
 
         public List<PhoneDto> GetPhonesByUserId(int id)
         {
-            var phones = db.Phones.Include(x => x.User)
-                .Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
+            var phones = db.Phones.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
 
             var dtos = new List<PhoneDto>();
             foreach (var phone in phones)

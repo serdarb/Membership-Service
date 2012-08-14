@@ -77,6 +77,10 @@
     <Compile Include="Migrations\201208051459144_requiredFieldUpdate.Designer.cs">
       <DependentUpon>201208051459144_requiredFieldUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201208141021436_activatedOnMadeNullable.cs" />
+    <Compile Include="Migrations\201208141021436_activatedOnMadeNullable.Designer.cs">
+      <DependentUpon>201208141021436_activatedOnMadeNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
