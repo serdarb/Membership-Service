@@ -355,12 +355,26 @@
 
         public bool UpdateAddress(AddressDto dto)
         {
-            var address = db.Addresses.First(x => x.Id == dto.User.Id);
+            var address = db.Addresses.First(x => x.DeletedOn.HasValue == false && x.Id == dto.User.Id);
 
             if (address != null)
             {
-                db.Addresses.Add(Mapper.Map<AddressDto, Address>(dto));
+                address.Name = dto.Name;
+                address.AddressText = dto.AddressText;
+                address.District = dto.District;
+                address.PostalCode = dto.PostalCode;
+                address.CompanyName = dto.CompanyName;
+                address.Coordinates = dto.Coordinates;
+                address.PersonName = dto.PersonName;
+                address.PrimaryPhone = dto.PrimaryPhone;               
+                address.TaxNumber = dto.TaxNumber;
+                address.TaxOffice = dto.TaxOffice;
+                address.IsApproved = dto.IsApproved;
+                address.IsCompany = dto.IsCompany;
+                address.Comment = dto.Comment;
+
                 db.SaveChanges();
+                   
                 return true;
             }
 
