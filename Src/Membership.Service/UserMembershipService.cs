@@ -299,8 +299,35 @@
         /// </exception>
         public bool AddAddress(AddressDto dto)
         {
-            db.Addresses.Add(Mapper.Map<AddressDto, Address>(dto));
-            return db.SaveChanges() > 0;
+            if (!this.db.Addresses.Any(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id && x.Name.Trim() == dto.Name.Trim()))
+            {
+                this.db.Addresses.Add(new Address
+                    {
+                        Name=dto.Name,
+                        AddressText=dto.AddressText,
+                        District=dto.District,
+                        CountyId=dto.County.Id,
+                        CityId=dto.City.Id,
+                        GeoZoneId=dto.GeoZone.Id,
+                        CountryId=dto.Country.Id,
+                        PostalCode=dto.PostalCode,
+                        Coordinates=dto.Coordinates,
+                        PersonName=dto.PersonName,
+                        PrimaryPhone=dto.PrimaryPhone,
+                        CompanyName=dto.CompanyName,
+                        TaxNumber=dto.TaxNumber,
+                        TaxOffice=dto.TaxOffice,
+                        IsApproved=dto.IsApproved,
+                        IsCompany=dto.IsCompany,
+                        UserId=dto.User.Id,
+                        SupplierId=dto.Supplier.Id,
+                        SupplierEmployeeId=dto.SupplierEmployee.Id
+                    });
+                this.db.SaveChanges();
+                return true;
+            }
+
+            return false;
         }
 
         public bool AddPhone(PhoneDto dto)
@@ -403,7 +430,7 @@
 
         public bool UpdateAddress(AddressDto dto)
         {
-            var address = db.Addresses.First(x => x.DeletedOn.HasValue == false && x.Id == dto.User.Id);
+            var address = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.User.Id && x.Name.Trim() == dto.Name.Trim());
 
             if (address != null)
             {
@@ -426,7 +453,7 @@
                 address.UpdatedOn = DateTime.Now;
                 address.UpdatedBy = dto.UpdatedBy;
 
-                db.SaveChanges();
+                this.db.SaveChanges();
 
                 return true;
             }
@@ -437,7 +464,7 @@
 
         public bool UpdatePhone(PhoneDto dto)
         {
-            var phone = db.Phones.First(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id);
+            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id && x.Telephone.Trim() == dto.Telephone.Trim());
 
             if (phone != null)
             {
@@ -449,7 +476,7 @@
                 phone.UpdatedOn = DateTime.Now;
                 phone.UpdatedBy = dto.UpdatedBy;
 
-                db.SaveChanges();
+                this.db.SaveChanges();
 
                 return true;
             }
@@ -459,13 +486,13 @@
 
         public bool DeleteAddress(AddressDto dto)
         {
-            var address = db.Addresses.First(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            var address = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id && x.Name.Trim() == dto.Name.Trim());
             if (address != null)
             {
                 address.DeletedOn = DateTime.Now;
                 address.UpdatedBy = dto.UpdatedBy;
 
-                db.SaveChanges();
+                this.db.SaveChanges();
 
                 return true;
             }
@@ -476,12 +503,12 @@
 
         public bool DeletePhone(PhoneDto dto)
         {
-            var phone = db.Phones.First(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id && x.Telephone.Trim() == dto.Telephone.Trim());
             if (phone != null)
             {
                 phone.DeletedOn = DateTime.Now;
                 phone.UpdatedBy = dto.UpdatedBy;
-                db.SaveChanges();
+                this.db.SaveChanges();
             }
 
             return false;
@@ -492,7 +519,7 @@
         {
             var id = GetUserIdByEmail(email);
 
-            var phones = db.Phones.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
+            var phones = this.db.Phones.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
 
             var dtos = new List<PhoneDto>();
             foreach (var phone in phones)
@@ -505,7 +532,7 @@
 
         public List<PhoneDto> GetPhonesByUserId(int id)
         {
-            var phones = db.Phones.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
+            var phones = this.db.Phones.Include(x => x.User).Where(x => x.DeletedOn.HasValue == false && x.UserId == id);
 
             var dtos = new List<PhoneDto>();
             foreach (var phone in phones)
@@ -519,7 +546,7 @@
         public List<AddressDto> GetAddresses(string email)
         {
             int id = GetUserIdByEmail(email);
-            var addresses = db.Addresses.Include(x => x.User)
+            var addresses = this.db.Addresses.Include(x => x.User)
                         .Include(x => x.County)
                         .Include(x => x.City)
                         .Where(x => x.DeletedOn.HasValue == false && x.Id == id);
@@ -535,7 +562,7 @@
 
         public List<AddressDto> GetAddressesByUserId(int id)
         {
-            var addresses = db.Addresses.Include(x => x.User)
+            var addresses = this.db.Addresses.Include(x => x.User)
                         .Include(x => x.County)
                         .Include(x => x.City)
                         .Where(x => x.DeletedOn.HasValue == false && x.User.Id == id);
