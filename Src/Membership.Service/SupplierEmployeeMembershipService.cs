@@ -150,6 +150,7 @@
                 supplierEmployee.UpdatedBy = supplierEmployee.User.Id;
 
                 this.db.SaveChanges();
+                return true;
             }
 
             return false;

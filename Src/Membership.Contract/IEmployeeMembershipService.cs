@@ -12,11 +12,14 @@ namespace Membership.Contract
         int CreateEmployee(EmployeeDto dto);
        
         [OperationContract]
-        bool DeleteEmployee(string email);
+        bool DeleteEmployee(EmployeeDto dto);
        
         [OperationContract]
         bool RequestPasswordResetForEmployee(string email);
-       
+
+        [OperationContract]
+        bool IsPasswordResetRequestValid(string email, string guid);
+
         [OperationContract]
         bool ChangePasswordForEmployee(string email, string newPasswordHash);
      
