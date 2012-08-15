@@ -26,9 +26,56 @@
 
         }
 
+        public int CreateSupplier(SupplierDto dto)
+        {
+            if (!this.db.Suppliers.Any(x => x.DeletedOn.HasValue == false && x.Name == dto.Name))
+            {
+                this.db.Suppliers.Add(new Supplier
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
+                    UpdatedBy = 1,
+                    Comment = dto.Comment,
+                    Name = dto.Name,
+                    ShortName = dto.ShortName,
+                    Description = dto.Description,
+                    Website = dto.Website,
+                    LogoUrl = dto.LogoUrl,
+                    TaxOffice = dto.TaxOffice,
+                    TaxNumber = dto.TaxNumber,
+                    PrimaryFinancialPersonName = dto.PrimaryFinancialPersonName,
+                    PrimaryFinancialPersonPhone = dto.PrimaryFinancialPersonPhone,
+                    PrimaryFinancialPersonGsm = dto.PrimaryPersonGsm,
+                    PrimaryPersonFax = dto.PrimaryPersonFax,
+                    PrimaryPersonEmail = dto.PrimaryPersonEmail
+                });
+                this.db.SaveChanges();
+                return 1;
+            }
+            return 0;
+        }
+
         public int CreateSupplierEmployee(SupplierEmployeeDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.DoesSupplierEmployeeEmailExists(dto.Email))
+            {
+                this.db.SupplierEmployees.Add(new SupplierEmployee
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
+                    UpdatedBy = 1,
+                    Comment = dto.Comment,
+                    Email = dto.Email,
+                    PrimaryPhone = dto.PrimaryPhone,
+                    UserName = dto.UserName,
+                    PasswordHash = dto.PasswordHash,
+                    Department = dto.Department,
+                    SupplierId = dto.Supplier.Id
+                });
+                this.db.SaveChanges();
+                return 1;
+            }
+            return 0;
         }
 
         public bool DeleteSupplierEmployee(SupplierEmployeeDto dto)
@@ -47,12 +94,65 @@
 
         public bool RequestPasswordResetForSupplierEmployee(string email)
         {
-            throw new NotImplementedException();
+            var guid = Guid.NewGuid().ToString().Replace("-", string.Empty);
+
+            var supplierEmployee = this.db.SupplierEmployees.First(x => x.Email == email);
+            supplierEmployee.UpdatedOn = DateTime.Now;
+            supplierEmployee.UpdatedBy = supplierEmployee.Id;
+            supplierEmployee.PasswordResetToken = guid;
+            supplierEmployee.PasswordResetRequestedOn = DateTime.Now;
+
+            this.db.SaveChanges();
+
+            //todo: send password reset mail
+
+            return true;
+
+        }
+
+        public bool IsPasswordResetRequestValid(string email, string guid)
+        {
+            if (this.DoesSupplierEmployeeEmailExists(email))
+            {
+                var supplierEmployee = this.db.SupplierEmployees
+                                .Include(x => x.User)
+                                .Include(x => x.Supplier)
+                                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+                if (supplierEmployee != null)
+                {
+                    if (guid != null && supplierEmployee.PasswordResetToken == guid.Trim())
+                    {
+                        if (supplierEmployee.PasswordResetRequestedOn.HasValue)
+                        {
+                            if (supplierEmployee.PasswordResetRequestedOn.Value.AddDays(1) > DateTime.Now)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         public bool ChangePasswordForSupplierEmployee(string email, string newPasswordHash)
         {
-            throw new NotImplementedException();
+            var supplierEmployee = this.db.SupplierEmployees
+                .Include(x => x.User)
+                .Include(x => x.Supplier)
+                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+
+            if (supplierEmployee != null)
+            {
+                supplierEmployee.PasswordHash = newPasswordHash;
+                supplierEmployee.UpdatedOn = DateTime.Now;
+                supplierEmployee.UpdatedBy = supplierEmployee.User.Id;
+
+                this.db.SaveChanges();
+            }
+
+            return false;
         }
 
         public bool AddAddress(AddressDto dto)
@@ -117,14 +217,14 @@
         {
             var supplierEmployee = this.db.SupplierEmployees
                 .Include(x => x.User)
-                .Include(x=> x.Supplier)
+                .Include(x => x.Supplier)
                 .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == id);
-            
-            if(supplierEmployee!=null)
+
+            if (supplierEmployee != null)
             {
-                return Mapper.Map<SupplierEmployee,SupplierEmployeeDto>(supplierEmployee);
+                return Mapper.Map<SupplierEmployee, SupplierEmployeeDto>(supplierEmployee);
             }
-            
+
             return null;
         }
 
@@ -133,14 +233,19 @@
             var supplierEmployee = this.db.SupplierEmployees
                 .Include(x => x.User)
                 .Include(x => x.Supplier)
-                .FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Email.Trim()==email.Trim());
-            
+                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+
             if (supplierEmployee != null)
             {
                 return Mapper.Map<SupplierEmployee, SupplierEmployeeDto>(supplierEmployee);
             }
 
             return null;
+        }
+
+        public bool DoesSupplierEmployeeEmailExists(string Email)
+        {
+            return this.db.SupplierEmployees.Any(x => x.DeletedOn.HasValue == false && x.Email == Email);
         }
     }
 }

@@ -16,5 +16,8 @@ namespace Membership.Data.Entity
 
         public string PrimaryPhone { get; set; }
         public string Department { get; set; }
+
+        public DateTime? PasswordResetRequestedOn { get; set; }
+        public string PasswordResetToken { get; set; }
     }
 }

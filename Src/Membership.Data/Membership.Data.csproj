@@ -85,6 +85,10 @@
     <Compile Include="Migrations\201208141156275_employeeAddressFix.Designer.cs">
       <DependentUpon>201208141156275_employeeAddressFix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201208151034539_passwordResetFix.cs" />
+    <Compile Include="Migrations\201208151034539_passwordResetFix.Designer.cs">
+      <DependentUpon>201208151034539_passwordResetFix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

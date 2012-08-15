@@ -10,12 +10,18 @@ namespace Membership.Contract
 
         [OperationContract]
         int CreateSupplierEmployee(SupplierEmployeeDto dto);
+
+        [OperationContract]
+        int CreateSupplier(SupplierDto dto);
         
         [OperationContract]
         bool DeleteSupplierEmployee(SupplierEmployeeDto dto);
 
         [OperationContract]
         bool RequestPasswordResetForSupplierEmployee(string email);
+
+        [OperationContract]
+        bool IsPasswordResetRequestValid(string email, string guid);
 
         [OperationContract]
         bool ChangePasswordForSupplierEmployee(string email, string newPasswordHash);
@@ -31,5 +37,9 @@ namespace Membership.Contract
 
         [OperationContract]
         SupplierEmployeeDto GetSupplierEmployee(string email);
+
+        [OperationContract]
+        bool DoesSupplierEmployeeEmailExists(string email);
+
     }
 }

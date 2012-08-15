@@ -1,6 +1,7 @@
 namespace Membership.Contract
 {
     using System.Runtime.Serialization;
+    using System;
 
     [DataContract]
     public class SupplierEmployeeDto : BaseDto
@@ -26,5 +27,11 @@ namespace Membership.Contract
 
         [DataMember]
         public string NewPasswordHash { get; set; }
+
+        [DataMember]
+        public DateTime? PasswordResetRequestedOn { get; set; }
+
+        [DataMember]
+        public string PasswordResetToken { get; set; }
     }
 }
