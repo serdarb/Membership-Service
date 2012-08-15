@@ -57,9 +57,10 @@
 
         public bool AddAddress(AddressDto dto)
         {
-            if (!this.db.Addresses.Any(x => x.DeletedOn.HasValue == false && x.Name == dto.Name))
+            if (!this.db.Addresses.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
-                this.db.Addresses.Add(new Address {
+                this.db.Addresses.Add(new Address
+                {
                     Name = dto.Name,
                     AddressText = dto.AddressText,
                     District = dto.District,
@@ -80,7 +81,7 @@
                     UpdatedOn = DateTime.Now,
                     CreatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
-                    Comment = dto.Comment                                    
+                    Comment = dto.Comment
                 });
                 this.db.SaveChanges();
 
@@ -92,17 +93,54 @@
 
         public bool AddPhone(PhoneDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.Phones.Any(x => x.DeletedOn.HasValue == false && x.Telephone.Trim() == dto.Telephone.Trim()))
+            {
+                this.db.Phones.Add(new Phone
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
+                    UpdatedBy = dto.User.Id,
+                    IsFax = dto.IsFax,
+                    IsPrimary = dto.IsPrimary,
+                    Comment = dto.Comment,
+                    Telephone = dto.Telephone.Trim(),
+                    UserId = dto.User.Id
+                });
+                return true;
+            }
+
+            return false;
+
         }
 
         public SupplierEmployeeDto GetSupplierEmployeeById(int id)
         {
-            throw new NotImplementedException();
+            var supplierEmployee = this.db.SupplierEmployees
+                .Include(x => x.User)
+                .Include(x=> x.Supplier)
+                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == id);
+            
+            if(supplierEmployee!=null)
+            {
+                return Mapper.Map<SupplierEmployee,SupplierEmployeeDto>(supplierEmployee);
+            }
+            
+            return null;
         }
 
         public SupplierEmployeeDto GetSupplierEmployee(string email)
         {
-            throw new NotImplementedException();
+            var supplierEmployee = this.db.SupplierEmployees
+                .Include(x => x.User)
+                .Include(x => x.Supplier)
+                .FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Email.Trim()==email.Trim());
+            
+            if (supplierEmployee != null)
+            {
+                return Mapper.Map<SupplierEmployee, SupplierEmployeeDto>(supplierEmployee);
+            }
+
+            return null;
         }
     }
 }
