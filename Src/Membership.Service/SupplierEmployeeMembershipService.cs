@@ -22,7 +22,7 @@
 
         public bool AuthSupplierEmployee(string userName, string password)
         {
-            return db.SupplierEmployees.Any(x => x.UserName == userName && x.PasswordHash == password && x.DeletedOn.HasValue == false);                
+            return db.SupplierEmployees.Any(x => x.UserName == userName && x.PasswordHash == password && x.DeletedOn.HasValue == false);
 
         }
 
@@ -31,9 +31,18 @@
             throw new NotImplementedException();
         }
 
-        public bool DeleteSupplierEmployee(string email)
+        public bool DeleteSupplierEmployee(SupplierEmployeeDto dto)
         {
-            throw new NotImplementedException();
+            var supplierEmployee = this.db.SupplierEmployees.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email == dto.Email);
+            if (supplierEmployee != null)
+            {
+                supplierEmployee.DeletedOn = DateTime.Now;
+                supplierEmployee.UpdatedBy = dto.User.Id;
+                this.db.SaveChanges();
+                return true;
+            }
+
+            return false;
         }
 
         public bool RequestPasswordResetForSupplierEmployee(string email)
@@ -48,7 +57,37 @@
 
         public bool AddAddress(AddressDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.Addresses.Any(x => x.DeletedOn.HasValue == false && x.Name == dto.Name))
+            {
+                this.db.Addresses.Add(new Address {
+                    Name = dto.Name,
+                    AddressText = dto.AddressText,
+                    District = dto.District,
+                    CountyId = dto.County.Id,
+                    CityId = dto.City.Id,
+                    GeoZoneId = dto.GeoZone.Id,
+                    CountryId = dto.Country.Id,
+                    PostalCode = dto.PostalCode,
+                    Coordinates = dto.Coordinates,
+                    PersonName = dto.PersonName,
+                    PrimaryPhone = dto.PrimaryPhone,
+                    CompanyName = dto.CompanyName,
+                    TaxNumber = dto.TaxNumber,
+                    TaxOffice = dto.TaxOffice,
+                    IsApproved = dto.IsApproved,
+                    IsCompany = dto.IsCompany,
+                    UserId = dto.User.Id,
+                    UpdatedOn = DateTime.Now,
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment                                    
+                });
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+
         }
 
         public bool AddPhone(PhoneDto dto)

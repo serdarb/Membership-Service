@@ -12,7 +12,7 @@ namespace Membership.Contract
         int CreateSupplierEmployee(SupplierEmployeeDto dto);
         
         [OperationContract]
-        bool DeleteSupplierEmployee(string email);
+        bool DeleteSupplierEmployee(SupplierEmployeeDto dto);
 
         [OperationContract]
         bool RequestPasswordResetForSupplierEmployee(string email);
