@@ -586,30 +586,76 @@ namespace Membership.Service
 
         #endregion
 
-
         #region Gender
 
         public List<GenderDto> GetGenders()
         {
-            throw new NotImplementedException();
+            var genders = this.db.Genders.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<GenderDto>();
+
+            foreach (var gender in genders)
+            {
+                dtos.Add(Mapper.Map<Gender, GenderDto>(gender));
+            }
+
+            return dtos;
         }
 
         public bool AddGender(GenderDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.Genders.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
+            {
+                this.db.Genders.Add(new Gender
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    Name = dto.Name,
+                    Description = dto.Description
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateGender(GenderDto dto)
         {
-            throw new NotImplementedException();
+            var gender = this.db.Genders.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (gender != null)
+            {
+                gender.UpdatedOn = DateTime.Now;
+                gender.UpdatedBy = dto.UpdatedBy;
+                gender.Comment = dto.Comment;
+
+                gender.Name = dto.Name;
+                gender.Description = dto.Description;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteGender(GenderDto dto)
         {
-            throw new NotImplementedException();
+            var gender = this.db.Genders.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (gender != null)
+            {
+                gender.DeletedOn = DateTime.Now;
+                gender.UpdatedBy = dto.UpdatedBy;
+                gender.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         #endregion
+
 
         #region GeoZone
 
