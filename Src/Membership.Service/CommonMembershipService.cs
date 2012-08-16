@@ -393,7 +393,7 @@ namespace Membership.Service
 
         public bool AddAdminMenuItemRole(AdminMenuItemRoleDto dto)
         {
-            if (!this.db.AdminMenuItemRoles.Any(x => x.DeletedOn.HasValue == false && x.Id== dto.Id))
+            if (!this.db.AdminMenuItemRoles.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
             {
                 this.db.AdminMenuItemRoles.Add(new AdminMenuItemRole
                 {
@@ -446,30 +446,76 @@ namespace Membership.Service
 
         #endregion
 
-
         #region AdminRole
 
         public List<AdminRoleDto> GetAdminRoles()
         {
-            throw new NotImplementedException();
+            var adminRoles = this.db.AdminRoles.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<AdminRoleDto>();
+
+            foreach (var adminRole in adminRoles)
+            {
+                dtos.Add(Mapper.Map<AdminRole, AdminRoleDto>(adminRole));
+            }
+
+            return dtos;
         }
 
         public bool AddAdminRole(AdminRoleDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.AdminRoles.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
+            {
+                this.db.AdminRoles.Add(new AdminRole
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    Name = dto.Name,
+                    Description = dto.Description
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateAdminRole(AdminRoleDto dto)
         {
-            throw new NotImplementedException();
+            var adminRole = this.db.AdminRoles.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (adminRole != null)
+            {
+                adminRole.UpdatedOn = DateTime.Now;
+                adminRole.UpdatedBy = dto.UpdatedBy;
+                adminRole.Comment = dto.Comment;
+
+                adminRole.Name = dto.Name;
+                adminRole.Description = dto.Description;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteAdminRole(AdminRoleDto dto)
         {
-            throw new NotImplementedException();
+            var adminRole = this.db.AdminRoles.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (adminRole != null)
+            {
+                adminRole.DeletedOn = DateTime.Now;
+                adminRole.UpdatedBy = dto.UpdatedBy;
+                adminRole.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         #endregion
+
 
         #region EmployeeAdminRole
 
