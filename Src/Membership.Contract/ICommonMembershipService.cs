@@ -148,9 +148,6 @@ namespace Membership.Contract
         [OperationContract]
         bool UpdateLog(LogDto dto);
 
-        [OperationContract]
-        bool DeleteLog(LogDto dto);
-
 
         [OperationContract]
         List<LogEventDto> GetLogEvents();

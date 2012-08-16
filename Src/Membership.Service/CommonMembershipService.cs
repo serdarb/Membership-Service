@@ -783,14 +783,69 @@ namespace Membership.Service
             return false;
         }
 
-        public bool DeleteLog(LogDto dto)
+        #endregion
+
+        #region LogEvent
+
+        public List<LogEventDto> GetLogEvents()
         {
-            var log = this.db.Logs.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
-            if (log != null)
+            var logEvents = this.db.LogEvents.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<LogEventDto>();
+
+            foreach (var logEvent in logEvents)
             {
-                log.DeletedOn = DateTime.Now;
-                log.UpdatedBy = dto.UpdatedBy;
-                log.Comment = dto.Comment;
+                dtos.Add(Mapper.Map<LogEvent, LogEventDto>(logEvent));
+            }
+
+            return dtos;
+        }
+
+        public bool AddLogEvent(LogEventDto dto)
+        {
+            if (!this.db.LogEvents.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
+            {
+                this.db.LogEvents.Add(new LogEvent
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    Name = dto.Name,
+                    Description = dto.Description
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateLogEvent(LogEventDto dto)
+        {
+            var logEvent = this.db.LogEvents.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (logEvent != null)
+            {
+                logEvent.UpdatedOn = DateTime.Now;
+                logEvent.UpdatedBy = dto.UpdatedBy;
+                logEvent.Comment = dto.Comment;
+
+                logEvent.Name = dto.Name;
+                logEvent.Description = dto.Description;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool DeleteLogEvent(LogEventDto dto)
+        {
+            var logEvent = this.db.LogEvents.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (logEvent != null)
+            {
+                logEvent.DeletedOn = DateTime.Now;
+                logEvent.UpdatedBy = dto.UpdatedBy;
+                logEvent.Comment = dto.Comment;
 
                 this.db.SaveChanges();
                 return true;
@@ -800,30 +855,6 @@ namespace Membership.Service
 
         #endregion
 
-
-        #region LogEvent
-
-        public List<LogEventDto> GetLogEvents()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool AddLogEvent(LogEventDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool UpdateLogEvent(LogEventDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool DeleteLogEvent(LogEventDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
         #region UserType
 
