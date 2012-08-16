@@ -203,7 +203,12 @@
 
         public int GetEmployeeIdByEmailorUserName(string emailorUserName)
         {
-
+            var employee = this.db.Employees.FirstOrDefault(x => x.DeletedOn.HasValue == false &&
+                                                           (x.UserName == emailorUserName || x.Email == emailorUserName));
+            if (employee != null)
+            {
+                return employee.Id;
+            }
             return 0;
         }
     }
