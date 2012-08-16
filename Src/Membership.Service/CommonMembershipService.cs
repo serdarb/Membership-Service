@@ -726,30 +726,80 @@ namespace Membership.Service
 
         #endregion
 
-
         #region Log
 
         public List<LogDto> GetLogs()
         {
-            throw new NotImplementedException();
+            var logs = this.db.Logs.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<LogDto>();
+
+            foreach (var log in logs)
+            {
+                dtos.Add(Mapper.Map<Log, LogDto>(log));
+            }
+
+            return dtos;
         }
 
         public bool AddLog(LogDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.Logs.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
+            {
+                this.db.Logs.Add(new Log
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    LogEventId = dto.LogEvent.Id,
+                    Expression = dto.Expression,
+                    OldRow = dto.OldRow,
+                    NewRow = dto.NewRow
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateLog(LogDto dto)
         {
-            throw new NotImplementedException();
+            var log = this.db.Logs.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (log != null)
+            {
+                log.UpdatedOn = DateTime.Now;
+                log.UpdatedBy = dto.UpdatedBy;
+                log.Comment = dto.Comment;
+
+                log.LogEventId = dto.LogEvent.Id;
+                log.Expression = dto.Expression;
+                log.OldRow = dto.OldRow;
+                log.NewRow = dto.NewRow;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteLog(LogDto dto)
         {
-            throw new NotImplementedException();
+            var log = this.db.Logs.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (log != null)
+            {
+                log.DeletedOn = DateTime.Now;
+                log.UpdatedBy = dto.UpdatedBy;
+                log.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         #endregion
+
 
         #region LogEvent
 
