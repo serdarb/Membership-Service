@@ -656,30 +656,76 @@ namespace Membership.Service
 
         #endregion
 
-
         #region GeoZone
 
         public List<GeoZoneDto> GetGeoZones()
         {
-            throw new NotImplementedException();
+            var geoZones = this.db.GeoZones.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<GeoZoneDto>();
+
+            foreach (var geoZone in geoZones)
+            {
+                dtos.Add(Mapper.Map<GeoZone, GeoZoneDto>(geoZone));
+            }
+
+            return dtos;
         }
 
         public bool AddGeoZone(GeoZoneDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.GeoZones.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
+            {
+                this.db.GeoZones.Add(new GeoZone
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    Name = dto.Name,
+                    CountryId = dto.Country.Id
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateGeoZone(GeoZoneDto dto)
         {
-            throw new NotImplementedException();
+            var geoZone = this.db.GeoZones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (geoZone != null)
+            {
+                geoZone.UpdatedOn = DateTime.Now;
+                geoZone.UpdatedBy = dto.UpdatedBy;
+                geoZone.Comment = dto.Comment;
+
+                geoZone.Name = dto.Name;
+                geoZone.CountryId = dto.Country.Id;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteGeoZone(GeoZoneDto dto)
         {
-            throw new NotImplementedException();
+            var geoZone = this.db.GeoZones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (geoZone != null)
+            {
+                geoZone.DeletedOn = DateTime.Now;
+                geoZone.UpdatedBy = dto.UpdatedBy;
+                geoZone.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         #endregion
+
 
         #region Log
 
