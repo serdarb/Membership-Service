@@ -855,27 +855,72 @@ namespace Membership.Service
 
         #endregion
 
-
         #region UserType
 
         public List<UserTypeDto> GetUserTypes()
         {
-            throw new NotImplementedException();
+            var userTypes = this.db.UserTypes.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<UserTypeDto>();
+
+            foreach (var userType in userTypes)
+            {
+                dtos.Add(Mapper.Map<UserType, UserTypeDto>(userType));
+            }
+
+            return dtos;
         }
 
         public bool AddUserType(UserTypeDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.UserTypes.Any(x => x.DeletedOn.HasValue == false && x.Id == dto.Id))
+            {
+                this.db.UserTypes.Add(new UserType
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    Name = dto.Name,
+                    Description = dto.Description
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateUserType(UserTypeDto dto)
         {
-            throw new NotImplementedException();
+            var userType = this.db.UserTypes.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (userType != null)
+            {
+                userType.UpdatedOn = DateTime.Now;
+                userType.UpdatedBy = dto.UpdatedBy;
+                userType.Comment = dto.Comment;
+
+                userType.Name = dto.Name;
+                userType.Description = dto.Description;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteUserType(UserTypeDto dto)
         {
-            throw new NotImplementedException();
+            var userType = this.db.UserTypes.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (userType != null)
+            {
+                userType.DeletedOn = DateTime.Now;
+                userType.UpdatedBy = dto.UpdatedBy;
+                userType.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         #endregion
