@@ -11,7 +11,7 @@ namespace Membership.Service
     public class CommonMembershipService : BaseMembershipService, ICommonMembershipService
     {
         #region Country
-       
+
         public List<CountryDto> GetCountries()
         {
             var countries = this.db.Countries.Where(x => x.DeletedOn.HasValue == false);
@@ -79,12 +79,12 @@ namespace Membership.Service
                 return true;
             }
             return false;
-        } 
-        
+        }
+
         #endregion
 
         #region City
-        
+
         public List<CityDto> GetCities()
         {
             var cities = this.db.Cities.Where(x => x.DeletedOn.HasValue == false);
@@ -150,12 +150,12 @@ namespace Membership.Service
             }
             return false;
 
-        } 
-        
+        }
+
         #endregion
 
         #region County
-       
+
         public List<CountyDto> GetCounties()
         {
             var counties = this.db.Counties.Where(x => x.DeletedOn.HasValue == false);
@@ -180,7 +180,7 @@ namespace Membership.Service
                     Comment = dto.Comment,
 
                     Name = dto.Name,
-                    CityId=dto.City.Id
+                    CityId = dto.City.Id
                 });
 
                 this.db.SaveChanges();
@@ -220,12 +220,12 @@ namespace Membership.Service
                 return true;
             }
             return false; ;
-        } 
-        
+        }
+
         #endregion
 
-
         #region AdminMenuItem
+        
         public List<AdminMenuItemDto> GetAdminMenuItems()
         {
             var adminMenuItems = this.db.AdminMenuItems.Where(x => x.DeletedOn.HasValue == false);
@@ -251,9 +251,9 @@ namespace Membership.Service
 
                     AdminMenuItemGroupId = dto.AdminMenuItemGroup.Id,
                     Name = dto.Name,
-                    Description=dto.Description,
-                    NavigateUrl=dto.NavigateUrl,
-                    DisplayOrder=dto.DisplayOrder                    
+                    Description = dto.Description,
+                    NavigateUrl = dto.NavigateUrl,
+                    DisplayOrder = dto.DisplayOrder
                 });
 
                 this.db.SaveChanges();
@@ -264,16 +264,44 @@ namespace Membership.Service
 
         public bool UpdateAdminMenuItem(AdminMenuItemDto dto)
         {
-            throw new NotImplementedException();
+            var updateAdminMenuItem = this.db.AdminMenuItems.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (updateAdminMenuItem != null)
+            {
+                updateAdminMenuItem.UpdatedOn = DateTime.Now;
+                updateAdminMenuItem.UpdatedBy = dto.UpdatedBy;
+                updateAdminMenuItem.Comment = dto.Comment;
+
+                updateAdminMenuItem.AdminMenuItemGroupId = dto.AdminMenuItemGroup.Id;
+                updateAdminMenuItem.Name = dto.Name;
+                updateAdminMenuItem.Description = dto.Description;
+                updateAdminMenuItem.NavigateUrl = dto.NavigateUrl;
+                updateAdminMenuItem.DisplayOrder = dto.DisplayOrder;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteAdminMenuItem(AdminMenuItemDto dto)
         {
-            throw new NotImplementedException();
-        } 
+            var updateAdminMenuItem = this.db.AdminMenuItems.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (updateAdminMenuItem != null)
+            {
+                updateAdminMenuItem.DeletedOn = DateTime.Now;
+                updateAdminMenuItem.UpdatedBy = dto.UpdatedBy;
+                updateAdminMenuItem.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+       
         #endregion
 
         #region AdminMenuItemGroup
+        
         public List<AdminMenuItemGroupDto> GetAdminMenuItemGroups()
         {
             throw new NotImplementedException();
@@ -292,7 +320,8 @@ namespace Membership.Service
         public bool DeleteAdddminMenuItemGroup(AdminMenuItemGroupDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+        
         #endregion
 
         #region AdminMenuItemRole
@@ -314,10 +343,11 @@ namespace Membership.Service
         public bool DeleteAdminMenuItemRole(AdminMenuItemRoleDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
         #endregion
 
         #region AdminRole
+        
         public List<AdminRoleDto> GetAdminRoles()
         {
             throw new NotImplementedException();
@@ -336,10 +366,12 @@ namespace Membership.Service
         public bool DeleteAdminRole(AdminRoleDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+       
         #endregion
 
         #region EmployeeAdminRole
+        
         public List<EmployeeAdminRoleDto> GetEmployeeAdminRoles()
         {
             throw new NotImplementedException();
@@ -358,10 +390,12 @@ namespace Membership.Service
         public bool DeleteEmployeeAdminRole(EmployeeAdminRoleDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+        
         #endregion
 
         #region Gender
+        
         public List<GenderDto> GetGenders()
         {
             throw new NotImplementedException();
@@ -380,10 +414,12 @@ namespace Membership.Service
         public bool DeleteGender(GenderDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+        
         #endregion
 
         #region GeoZone
+        
         public List<GeoZoneDto> GetGeoZones()
         {
             throw new NotImplementedException();
@@ -402,10 +438,12 @@ namespace Membership.Service
         public bool DeleteGeoZone(GeoZoneDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+        
         #endregion
 
         #region Log
+        
         public List<LogDto> GetLogs()
         {
             throw new NotImplementedException();
@@ -424,10 +462,12 @@ namespace Membership.Service
         public bool DeleteLog(LogDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+        
         #endregion
 
         #region LogEvent
+        
         public List<LogEventDto> GetLogEvents()
         {
             throw new NotImplementedException();
@@ -446,10 +486,12 @@ namespace Membership.Service
         public bool DeleteLogEvent(LogEventDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+        
         #endregion
 
         #region UserType
+        
         public List<UserTypeDto> GetUserTypes()
         {
             throw new NotImplementedException();
@@ -468,7 +510,8 @@ namespace Membership.Service
         public bool DeleteUserType(UserTypeDto dto)
         {
             throw new NotImplementedException();
-        } 
+        }
+       
         #endregion
 
 
