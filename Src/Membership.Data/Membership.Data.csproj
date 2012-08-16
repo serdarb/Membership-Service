@@ -89,6 +89,14 @@
     <Compile Include="Migrations\201208151034539_passwordResetFix.Designer.cs">
       <DependentUpon>201208151034539_passwordResetFix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201208160954520_userNameRequiredConstraint.cs" />
+    <Compile Include="Migrations\201208160954520_userNameRequiredConstraint.Designer.cs">
+      <DependentUpon>201208160954520_userNameRequiredConstraint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201208160959111_userNameIndex.cs" />
+    <Compile Include="Migrations\201208160959111_userNameIndex.Designer.cs">
+      <DependentUpon>201208160959111_userNameIndex.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

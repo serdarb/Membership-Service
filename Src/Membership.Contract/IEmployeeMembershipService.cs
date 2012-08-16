@@ -34,5 +34,8 @@ namespace Membership.Contract
 
         [OperationContract]
         EmployeeDto GetEmployee(string email);
+
+        [OperationContract]
+        int GetEmployeeIdByEmailorUserName(string emailorUserName);
     }
 }

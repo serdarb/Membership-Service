@@ -32,6 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AutoMapper.cs" />
+    <Compile Include="BaseMembershipService.cs" />
+    <Compile Include="CommonMembershipService.cs" />
     <Compile Include="SupplierEmployeeMembershipService.cs" />
     <Compile Include="EmployeeMembershipService.cs" />
     <Compile Include="UserMembershipService.cs" />

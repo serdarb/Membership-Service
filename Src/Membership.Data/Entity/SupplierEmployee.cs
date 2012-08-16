@@ -15,7 +15,8 @@ namespace Membership.Data.Entity
         [Required(AllowEmptyStrings = false), StringLength(255)]
         public string Email { get; set; }
         public string PrimaryPhone { get; set; }
-        
+
+        [Required(AllowEmptyStrings = false), StringLength(25)]
         public string UserName { get; set; }
         public string PasswordHash { get; set; }
 

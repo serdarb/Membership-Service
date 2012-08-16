@@ -16,13 +16,12 @@
     /// <summary>
     /// The user membership service.
     /// </summary>
-    public class UserMembershipService : IUserMembershipService
+    public class UserMembershipService : BaseMembershipService, IUserMembershipService
     {
         private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
         private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<int, UserDto> UserByIdDictionary { get; set; }
-
-        private MembershipDB db = new MembershipDB();
+              
 
         public UserMembershipService()
         {

@@ -16,13 +16,13 @@
     /// <summary>
     /// The employee membership service.
     /// </summary>
-    public class EmployeeMembershipService : IEmployeeMembershipService
+    public class EmployeeMembershipService : BaseMembershipService, IEmployeeMembershipService
     {
-        private MembershipDB db = new MembershipDB();
-
         public bool AuthEmployee(string userName, string password)
         {
-            return db.Employees.Any(x => x.UserName == userName && x.PasswordHash == password && x.DeletedOn.HasValue == false);
+            return db.Employees.Any(x => x.DeletedOn.HasValue == false &&
+                                         x.PasswordHash == password &&
+                                         (x.UserName == userName || x.Email == userName));
         }
 
         public int CreateEmployee(EmployeeDto dto)
@@ -199,6 +199,12 @@
             }
 
             return null;
+        }
+
+        public int GetEmployeeIdByEmailorUserName(string emailorUserName)
+        {
+
+            return 0;
         }
     }
 }

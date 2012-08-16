@@ -16,9 +16,8 @@
     /// <summary>
     /// The supplier employee membership service.
     /// </summary>
-    public class SupplierEmployeeMembershipService : ISupplierEmployeeMembershipService
+    public class SupplierEmployeeMembershipService : BaseMembershipService, ISupplierEmployeeMembershipService
     {
-        private MembershipDB db = new MembershipDB();
 
         public bool AuthSupplierEmployee(string userName, string password)
         {

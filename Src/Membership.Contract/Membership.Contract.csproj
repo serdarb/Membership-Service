@@ -46,6 +46,7 @@
     <Compile Include="Dto\EmployeeAdminRoleDto.cs" />
     <Compile Include="Dto\LogDto.cs" />
     <Compile Include="Dto\LogEventDto.cs" />
+    <Compile Include="ICommonMembershipService.cs" />
     <Compile Include="ISupplierEmployeeMembershipService.cs" />
     <Compile Include="IEmployeeMembershipService.cs" />
     <Compile Include="Dto\AddressDto.cs" />
