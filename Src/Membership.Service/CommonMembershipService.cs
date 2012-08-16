@@ -100,7 +100,7 @@ namespace Membership.Service
 
         public bool AddCity(CityDto dto)
         {
-            if (!this.db.Cities.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == x.Name.Trim()))
+            if (!this.db.Cities.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
                 this.db.Cities.Add(new City
                 {
@@ -171,7 +171,7 @@ namespace Membership.Service
 
         public bool AddCounty(CountyDto dto)
         {
-            if (!this.db.Counties.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == x.Name.Trim()))
+            if (!this.db.Counties.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
                 this.db.Counties.Add(new County
                 {
@@ -241,7 +241,7 @@ namespace Membership.Service
 
         public bool AddAdminMenuItem(AdminMenuItemDto dto)
         {
-            if (!this.db.AdminMenuItems.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == x.Name.Trim()))
+            if (!this.db.AdminMenuItems.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
                 this.db.AdminMenuItems.Add(new AdminMenuItem
                 {
@@ -317,7 +317,7 @@ namespace Membership.Service
 
         public bool AddAdminMenuItemGroup(AdminMenuItemGroupDto dto)
         {
-            if (!this.db.AdminMenuItemGroups.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == x.Name.Trim()))
+            if (!this.db.AdminMenuItemGroups.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
                 this.db.AdminMenuItemGroups.Add(new AdminMenuItemGroup
                 {
@@ -376,28 +376,76 @@ namespace Membership.Service
 
         #endregion
 
-
         #region AdminMenuItemRole
+
         public List<AdminMenuItemRoleDto> GetAdminMenuItemRoles()
         {
-            throw new NotImplementedException();
+            var adminMenuItemRoles = this.db.AdminMenuItemRoles.Where(x => x.DeletedOn.HasValue == false);
+            var dtos = new List<AdminMenuItemRoleDto>();
+
+            foreach (var adminMenuItemRole in adminMenuItemRoles)
+            {
+                dtos.Add(Mapper.Map<AdminMenuItemRole, AdminMenuItemRoleDto>(adminMenuItemRole));
+            }
+
+            return dtos;
         }
 
         public bool AddAdminMenuItemRole(AdminMenuItemRoleDto dto)
         {
-            throw new NotImplementedException();
+            if (!this.db.AdminMenuItemRoles.Any(x => x.DeletedOn.HasValue == false && x.Id== dto.Id))
+            {
+                this.db.AdminMenuItemRoles.Add(new AdminMenuItemRole
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment = dto.Comment,
+
+                    AdminMenuItemId = dto.AdminMenuItem.Id,
+                    AdminRoleId = dto.AdminMenuItem.Id
+                });
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateAdminMenuItemRole(AdminMenuItemRoleDto dto)
         {
-            throw new NotImplementedException();
+            var adminMenuItemRole = this.db.AdminMenuItemRoles.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (adminMenuItemRole != null)
+            {
+                adminMenuItemRole.UpdatedOn = DateTime.Now;
+                adminMenuItemRole.UpdatedBy = dto.UpdatedBy;
+                adminMenuItemRole.Comment = dto.Comment;
+
+                adminMenuItemRole.AdminMenuItemId = dto.AdminMenuItem.Id;
+                adminMenuItemRole.AdminRoleId = dto.AdminMenuItem.Id;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteAdminMenuItemRole(AdminMenuItemRoleDto dto)
         {
-            throw new NotImplementedException();
+            var adminMenuItemRole = this.db.AdminMenuItemRoles.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (adminMenuItemRole != null)
+            {
+                adminMenuItemRole.DeletedOn = DateTime.Now;
+                adminMenuItemRole.UpdatedBy = dto.UpdatedBy;
+                adminMenuItemRole.Comment = dto.Comment;
+
+                this.db.SaveChanges();
+                return true;
+            }
+            return false;
         }
+
         #endregion
+
 
         #region AdminRole
 
