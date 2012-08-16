@@ -25,8 +25,6 @@
 
         public UserMembershipService()
         {
-            AutoMapperConfiguration.CreateMaps();
-
             this.UserDictionary = new ConcurrentDictionary<string, UserDto>();
             this.UserLoginDictionary = new ConcurrentDictionary<string, string>();
             this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();

@@ -13,6 +13,10 @@ namespace Membership.Service
     {
         protected MembershipDB db = new MembershipDB();
 
+        public BaseMembershipService()
+        {
+            AutoMapperConfiguration.CreateMaps();
+        }
         
     }
 }
