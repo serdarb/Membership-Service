@@ -338,7 +338,7 @@ namespace Membership.Service
             return false;
         }
 
-        public bool UpdatAdddminMenuItemGroup(AdminMenuItemGroupDto dto)
+        public bool UpdatAdminMenuItemGroup(AdminMenuItemGroupDto dto)
         {
             var AdminMenuItemGroup = this.db.AdminMenuItemGroups.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
             if (AdminMenuItemGroup != null)
@@ -359,7 +359,7 @@ namespace Membership.Service
             return false;
         }
 
-        public bool DeleteAdddminMenuItemGroup(AdminMenuItemGroupDto dto)
+        public bool DeleteAdminMenuItemGroup(AdminMenuItemGroupDto dto)
         {
             var adminMenuItemGroup = this.db.AdminMenuItemGroups.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
             if (adminMenuItemGroup != null)

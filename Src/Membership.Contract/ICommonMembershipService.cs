@@ -68,10 +68,10 @@ namespace Membership.Contract
         bool AddAdminMenuItemGroup(AdminMenuItemGroupDto dto);
 
         [OperationContract]
-        bool UpdatAdddminMenuItemGroup(AdminMenuItemGroupDto dto);
+        bool UpdatAdminMenuItemGroup(AdminMenuItemGroupDto dto);
 
         [OperationContract]
-        bool DeleteAdddminMenuItemGroup(AdminMenuItemGroupDto dto);
+        bool DeleteAdminMenuItemGroup(AdminMenuItemGroupDto dto);
 
 
         [OperationContract]
