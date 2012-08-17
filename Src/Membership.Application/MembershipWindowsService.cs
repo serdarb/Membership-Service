@@ -2,6 +2,8 @@
 
 namespace Membership.Application
 {
+    using NLog;
+
     partial class MembershipWindowsService : ServiceBase
     {
         public MembershipWindowsService()
@@ -16,7 +18,7 @@ namespace Membership.Application
 
         protected override void OnStop()
         {
-            //Logger.Log("MembershipWindowsService stopped!");
+
         }
     }
 }

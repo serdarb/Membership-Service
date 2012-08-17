@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Castle.DynamicProxy;
 using Castle.Core.Logging;
-using System.Reflection;
-using System.Globalization;
+using Castle.DynamicProxy;
 
 namespace Membership.Application
 {
@@ -50,16 +47,24 @@ namespace Membership.Application
         private string GetPropertiesAndValues(object argument)
         {
             var str = new StringBuilder();
-            var propertyInfos = argument.GetType().GetProperties();
-            foreach (var propertyInfo in propertyInfos)
-            {
-                try
-                {
-                    str.AppendFormat(" {0} # {1} ", propertyInfo.Name, propertyInfo.GetValue(argument, null));
 
-                }
-                catch { }
+            if (argument is string)
+            {
+                str.AppendFormat(" {0} ", argument);
             }
+            else
+            {
+                var propertyInfos = argument.GetType().GetProperties();
+                foreach (var propertyInfo in propertyInfos)
+                {
+                    try
+                    {
+                        str.AppendFormat(" {0} # {1} ", propertyInfo.Name, propertyInfo.GetValue(argument, null));
+                    }
+                    catch { }
+                }
+            }
+            
 
             return str.ToString();
         }
