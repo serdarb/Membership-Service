@@ -402,7 +402,7 @@ namespace Membership.Service
                     Comment = dto.Comment,
 
                     AdminMenuItemId = dto.AdminMenuItem.Id,
-                    AdminRoleId = dto.AdminMenuItem.Id
+                    AdminRoleId = dto.AdminRole.Id
                 });
 
                 this.db.SaveChanges();
