@@ -211,5 +211,17 @@
             }
             return 0;
         }
+
+        public List<EmployeeDto> GetEmployees()
+        {
+            var employees= this.db.Employees.Where(x => x.DeletedOn.HasValue == false);
+            var dtos=new List<EmployeeDto>();
+            foreach (var employee in employees)
+            {
+                dtos.Add(Mapper.Map<Employee, EmployeeDto>(employee));
+            }
+            return dtos;
+
+        }
     }
 }

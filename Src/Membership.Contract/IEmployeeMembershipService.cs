@@ -1,4 +1,5 @@
 ﻿using System.ServiceModel;
+using System.Collections.Generic;
 
 namespace Membership.Contract
 {
@@ -37,5 +38,8 @@ namespace Membership.Contract
 
         [OperationContract]
         int GetEmployeeIdByEmailorUserName(string emailorUserName);
+
+        [OperationContract]
+        List<EmployeeDto> GetEmployees();
     }
 }
