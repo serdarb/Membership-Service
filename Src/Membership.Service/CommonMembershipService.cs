@@ -243,18 +243,26 @@ namespace Membership.Service
         {
             if (!this.db.AdminMenuItems.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
-                this.db.AdminMenuItems.Add(new AdminMenuItem
+                var adminMenuItem = new AdminMenuItem
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
-                    AdminMenuItemGroupId = dto.AdminMenuItemGroup.Id,
                     Name = dto.Name,
                     Description = dto.Description,
                     NavigateUrl = dto.NavigateUrl,
                     DisplayOrder = dto.DisplayOrder
-                });
+
+                };
+
+                if (dto.AdminMenuItemGroup != null)
+                {
+                    adminMenuItem.AdminMenuItemGroupId = dto.AdminMenuItemGroup.Id;
+                }
+
+                this.db.AdminMenuItems.Add(adminMenuItem);
 
                 this.db.SaveChanges();
                 return true;
@@ -298,6 +306,16 @@ namespace Membership.Service
             return false;
         }
 
+        public int GetAdminMenuItemIdByName(string Name)
+        {
+            var adminMenuItem = this.db.AdminMenuItems.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Name.Trim() == Name.Trim());
+            if (adminMenuItem != null)
+            {
+                return adminMenuItem.Id;
+            }
+            return 0;
+        }
+
         #endregion
 
         #region AdminMenuItemGroup
@@ -319,18 +337,25 @@ namespace Membership.Service
         {
             if (!this.db.AdminMenuItemGroups.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
             {
-                this.db.AdminMenuItemGroups.Add(new AdminMenuItemGroup
+                var adminMenuItemGroup = new AdminMenuItemGroup
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
-                    ParentAdminMenuItemGroupId = dto.ParentAdminMenuItemGroup.Id,
                     Name = dto.Name,
                     Description = dto.Description,
                     NavigateUrl = dto.NavigateUrl,
                     DisplayOrder = dto.DisplayOrder
-                });
+                };
+
+                if (dto.ParentAdminMenuItemGroup != null)
+                {
+                    adminMenuItemGroup.ParentAdminMenuItemGroupId = dto.ParentAdminMenuItemGroup.Id;
+                }
+
+                this.db.AdminMenuItemGroups.Add(adminMenuItemGroup);
 
                 this.db.SaveChanges();
                 return true;
@@ -372,6 +397,16 @@ namespace Membership.Service
                 return true;
             }
             return false;
+        }
+
+        public int GetAdminMenuItemGroupIdByName(string Name)
+        {
+            var adminMenuItemGroup = this.db.AdminMenuItemGroups.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Name.Trim() == Name.Trim());
+            if (adminMenuItemGroup != null)
+            {
+                return adminMenuItemGroup.Id;
+            }
+            return 0;
         }
 
         #endregion
@@ -924,7 +959,6 @@ namespace Membership.Service
         }
 
         #endregion
-
 
     }
 }

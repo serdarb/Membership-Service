@@ -60,6 +60,9 @@ namespace Membership.Contract
         [OperationContract]
         bool DeleteAdminMenuItem(AdminMenuItemDto dto);
 
+        [OperationContract]
+        int GetAdminMenuItemIdByName(string Name);
+
 
         [OperationContract]
         List<AdminMenuItemGroupDto> GetAdminMenuItemGroups();
@@ -72,6 +75,9 @@ namespace Membership.Contract
 
         [OperationContract]
         bool DeleteAdminMenuItemGroup(AdminMenuItemGroupDto dto);
+
+        [OperationContract]
+        int GetAdminMenuItemGroupIdByName(string Name);
 
 
         [OperationContract]
