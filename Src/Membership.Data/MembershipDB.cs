@@ -25,7 +25,6 @@
         public DbSet<SupplierEmployee> SupplierEmployees { get; set; }
         public DbSet<Employee> Employees { get; set; }
 
-        public DbSet<AdminMenuItemGroup> AdminMenuItemGroups { get; set; }
         public DbSet<AdminMenuItem> AdminMenuItems { get; set; }
         public DbSet<AdminMenuItemRole> AdminMenuItemRoles { get; set; }
         public DbSet<AdminRole> AdminRoles { get; set; }

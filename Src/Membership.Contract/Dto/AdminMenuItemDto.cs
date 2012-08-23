@@ -6,7 +6,7 @@
     public class AdminMenuItemDto : BaseDto
     {
         [DataMember]
-        public AdminMenuItemGroupDto AdminMenuItemGroup { get; set; }
+        public AdminMenuItemDto ParentAdminMenuItem { get; set; }
         [DataMember]
         public string Name { get; set; }
         [DataMember]

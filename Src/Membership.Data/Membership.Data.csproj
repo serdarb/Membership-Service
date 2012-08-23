@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="Entity\Address.cs" />
     <Compile Include="Entity\AdminMenuItem.cs" />
-    <Compile Include="Entity\AdminMenuItemGroup.cs" />
     <Compile Include="Entity\AdminMenuItemRole.cs" />
     <Compile Include="Entity\AdminRole.cs" />
     <Compile Include="Entity\Affiliate.cs" />
@@ -96,6 +95,10 @@
     <Compile Include="Migrations\201208160959111_userNameIndex.cs" />
     <Compile Include="Migrations\201208160959111_userNameIndex.Designer.cs">
       <DependentUpon>201208160959111_userNameIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201208231515412_adminMenuItemFix.cs" />
+    <Compile Include="Migrations\201208231515412_adminMenuItemFix.Designer.cs">
+      <DependentUpon>201208231515412_adminMenuItemFix.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

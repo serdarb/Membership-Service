@@ -65,22 +65,6 @@ namespace Membership.Contract
 
 
         [OperationContract]
-        List<AdminMenuItemGroupDto> GetAdminMenuItemGroups();
-
-        [OperationContract]
-        bool AddAdminMenuItemGroup(AdminMenuItemGroupDto dto);
-
-        [OperationContract]
-        bool UpdatAdminMenuItemGroup(AdminMenuItemGroupDto dto);
-
-        [OperationContract]
-        bool DeleteAdminMenuItemGroup(AdminMenuItemGroupDto dto);
-
-        [OperationContract]
-        int GetAdminMenuItemGroupIdByName(string Name);
-
-
-        [OperationContract]
         List<AdminMenuItemRoleDto> GetAdminMenuItemRoles();
 
         [OperationContract]

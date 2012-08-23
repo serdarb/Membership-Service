@@ -3,10 +3,10 @@
     using System;
 
     [Serializable]
-    public class AdminMenuItem : BaseEntity 
+    public class AdminMenuItem : BaseEntity
     {
-        public AdminMenuItemGroup AdminMenuItemGroup { get; set; }
-        public int? AdminMenuItemGroupId { get; set; }
+        public AdminMenuItem ParentAdminMenuItem { get; set; }
+        public int? ParentAdminMenuItemId { get; set; }
 
         public string Name { get; set; }
         public string Description { get; set; }

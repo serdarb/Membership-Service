@@ -19,8 +19,6 @@
             Mapper.CreateMap(typeof(Address), typeof(AddressDto));
             Mapper.CreateMap(typeof(AdminMenuItem), typeof(AdminMenuItemDto));
             Mapper.CreateMap(typeof(AdminMenuItemDto), typeof(AdminMenuItem));
-            Mapper.CreateMap(typeof(AdminMenuItemGroup), typeof(AdminMenuItemGroupDto));
-            Mapper.CreateMap(typeof(AdminMenuItemGroupDto), typeof(AdminMenuItemGroup));
             Mapper.CreateMap(typeof(AdminMenuItemRole), typeof(AdminMenuItemRoleDto));
             Mapper.CreateMap(typeof(AdminMenuItemRoleDto), typeof(AdminMenuItemRole));
             Mapper.CreateMap(typeof(AdminRole), typeof(AdminRoleDto));

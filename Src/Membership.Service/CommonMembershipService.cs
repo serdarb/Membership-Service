@@ -257,9 +257,9 @@ namespace Membership.Service
 
                 };
 
-                if (dto.AdminMenuItemGroup != null)
+                if (dto.ParentAdminMenuItem != null)
                 {
-                    adminMenuItem.AdminMenuItemGroupId = dto.AdminMenuItemGroup.Id;
+                    adminMenuItem.ParentAdminMenuItemId = dto.ParentAdminMenuItem.Id;
                 }
 
                 this.db.AdminMenuItems.Add(adminMenuItem);
@@ -279,7 +279,7 @@ namespace Membership.Service
                 updateAdminMenuItem.UpdatedBy = dto.UpdatedBy;
                 updateAdminMenuItem.Comment = dto.Comment;
 
-                updateAdminMenuItem.AdminMenuItemGroupId = dto.AdminMenuItemGroup.Id;
+                updateAdminMenuItem.ParentAdminMenuItemId = dto.ParentAdminMenuItem.Id;
                 updateAdminMenuItem.Name = dto.Name;
                 updateAdminMenuItem.Description = dto.Description;
                 updateAdminMenuItem.NavigateUrl = dto.NavigateUrl;
@@ -312,99 +312,6 @@ namespace Membership.Service
             if (adminMenuItem != null)
             {
                 return adminMenuItem.Id;
-            }
-            return 0;
-        }
-
-        #endregion
-
-        #region AdminMenuItemGroup
-
-        public List<AdminMenuItemGroupDto> GetAdminMenuItemGroups()
-        {
-            var adminMenuItemGroups = this.db.AdminMenuItemGroups.Where(x => x.DeletedOn.HasValue == false);
-            var dtos = new List<AdminMenuItemGroupDto>();
-
-            foreach (var adminMenuItemGroup in adminMenuItemGroups)
-            {
-                dtos.Add(Mapper.Map<AdminMenuItemGroup, AdminMenuItemGroupDto>(adminMenuItemGroup));
-            }
-
-            return dtos;
-        }
-
-        public bool AddAdminMenuItemGroup(AdminMenuItemGroupDto dto)
-        {
-            if (!this.db.AdminMenuItemGroups.Any(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim()))
-            {
-                var adminMenuItemGroup = new AdminMenuItemGroup
-                {
-                    CreatedOn = DateTime.Now,
-                    UpdatedOn = DateTime.Now,
-                    UpdatedBy = dto.UpdatedBy,
-                    Comment = dto.Comment,
-
-                    Name = dto.Name,
-                    Description = dto.Description,
-                    NavigateUrl = dto.NavigateUrl,
-                    DisplayOrder = dto.DisplayOrder
-                };
-
-                if (dto.ParentAdminMenuItemGroup != null)
-                {
-                    adminMenuItemGroup.ParentAdminMenuItemGroupId = dto.ParentAdminMenuItemGroup.Id;
-                }
-
-                this.db.AdminMenuItemGroups.Add(adminMenuItemGroup);
-
-                this.db.SaveChanges();
-                return true;
-            }
-            return false;
-        }
-
-        public bool UpdatAdminMenuItemGroup(AdminMenuItemGroupDto dto)
-        {
-            var AdminMenuItemGroup = this.db.AdminMenuItemGroups.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
-            if (AdminMenuItemGroup != null)
-            {
-                AdminMenuItemGroup.UpdatedOn = DateTime.Now;
-                AdminMenuItemGroup.UpdatedBy = dto.UpdatedBy;
-                AdminMenuItemGroup.Comment = dto.Comment;
-
-                AdminMenuItemGroup.ParentAdminMenuItemGroupId = dto.ParentAdminMenuItemGroup.Id;
-                AdminMenuItemGroup.Name = dto.Name;
-                AdminMenuItemGroup.Description = dto.Description;
-                AdminMenuItemGroup.NavigateUrl = dto.NavigateUrl;
-                AdminMenuItemGroup.DisplayOrder = dto.DisplayOrder;
-
-                this.db.SaveChanges();
-                return true;
-            }
-            return false;
-        }
-
-        public bool DeleteAdminMenuItemGroup(AdminMenuItemGroupDto dto)
-        {
-            var adminMenuItemGroup = this.db.AdminMenuItemGroups.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
-            if (adminMenuItemGroup != null)
-            {
-                adminMenuItemGroup.DeletedOn = DateTime.Now;
-                adminMenuItemGroup.UpdatedBy = dto.UpdatedBy;
-                adminMenuItemGroup.Comment = dto.Comment;
-
-                this.db.SaveChanges();
-                return true;
-            }
-            return false;
-        }
-
-        public int GetAdminMenuItemGroupIdByName(string Name)
-        {
-            var adminMenuItemGroup = this.db.AdminMenuItemGroups.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Name.Trim() == Name.Trim());
-            if (adminMenuItemGroup != null)
-            {
-                return adminMenuItemGroup.Id;
             }
             return 0;
         }
