@@ -5,6 +5,7 @@ using System.Text;
 using Membership.Contract;
 using AutoMapper;
 using Membership.Data.Entity;
+using System.Data.Entity;
 
 namespace Membership.Service
 {
@@ -228,7 +229,7 @@ namespace Membership.Service
 
         public List<AdminMenuItemDto> GetAdminMenuItems()
         {
-            var adminMenuItems = this.db.AdminMenuItems.Where(x => x.DeletedOn.HasValue == false);
+            var adminMenuItems = this.db.AdminMenuItems.Include(x => x.ParentAdminMenuItem).Where(x => x.DeletedOn.HasValue == false);
             var dtos = new List<AdminMenuItemDto>();
 
             foreach (var adminMenuItem in adminMenuItems)

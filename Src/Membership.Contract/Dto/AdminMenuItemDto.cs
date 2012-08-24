@@ -1,12 +1,17 @@
 ﻿namespace Membership.Contract
 {
     using System.Runtime.Serialization;
+    using System.Collections.Generic;
 
     [DataContract]
     public class AdminMenuItemDto : BaseDto
     {
         [DataMember]
         public AdminMenuItemDto ParentAdminMenuItem { get; set; }
+
+        [DataMember]
+        public List<AdminMenuItemDto> SubMenuItems { get; set; }
+
         [DataMember]
         public string Name { get; set; }
         [DataMember]
