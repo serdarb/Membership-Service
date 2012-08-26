@@ -71,5 +71,8 @@ namespace Membership.Contract
 
         [OperationContract]
         List<AddressDto> GetAddressesByUserId(int id);
+
+        [OperationContract]
+        AddressDto GetAddressById(int id);
     }
 }

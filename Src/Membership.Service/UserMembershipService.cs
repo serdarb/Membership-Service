@@ -576,5 +576,22 @@
 
             return dtos;
         }
+
+
+        public AddressDto GetAddressById(int id)
+        {
+            var address = this.db.Addresses.Include(x => x.User)
+                        .Include(x => x.County)
+                        .Include(x => x.City)
+                        .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == id);
+
+            if (address != null)
+            {
+                return Mapper.Map<Address, AddressDto>(address);
+            }
+
+            return null;
+
+        }
     }
 }
