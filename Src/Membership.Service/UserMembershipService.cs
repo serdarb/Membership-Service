@@ -21,7 +21,7 @@
         private ConcurrentDictionary<string, string> UserLoginDictionary { get; set; }
         private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<int, UserDto> UserByIdDictionary { get; set; }
-              
+
 
         public UserMembershipService()
         {
@@ -133,7 +133,7 @@
                                      Website = dto.Website,
                                      IdentityNumber = dto.IdentityNumber,
                                      AffiliateSlug = dto.AffiliateSlug
-                                     
+
                                  });
                 this.db.SaveChanges();
 
@@ -419,6 +419,7 @@
             }
             return 0;
         }
+
         public string GetUserEmailById(int id)
         {
             if (this.UserByIdDictionary.ContainsKey(id))
@@ -577,7 +578,6 @@
             return dtos;
         }
 
-
         public AddressDto GetAddressById(int id)
         {
             var address = this.db.Addresses.Include(x => x.User)
@@ -594,14 +594,13 @@
 
         }
 
-
-        public bool Update(UserDto dto)
+        public bool UpdateUser(UserDto dto)
         {
-            var user = this.db.Users.FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Id==dto.Id);
-            if (user!=null)
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
+            if (user != null)
             {
-                user.AffiliateSlug=dto.AffiliateSlug;
-                user.Birthday=dto.Birthday;
+                user.AffiliateSlug = dto.AffiliateSlug;
+                user.Birthday = dto.Birthday;
                 user.Email = dto.Email;
                 user.FacebookId = dto.FacebookId;
                 user.FirstName = dto.FirstName;
@@ -621,9 +620,13 @@
                 user.PreferredName = dto.PreferredName;
                 user.RefererSource = dto.RefererSource;
                 user.Website = dto.Website;
+                user.TwitterId = dto.TwitterId;
+                user.VirtualMoney = dto.VirtualMoney;
+                user.UserTypeId = dto.UserType.Id;
+                user.SkypeId = string.Empty;
 
-                user.Comment=dto.Comment;
-                user.UpdatedOn=DateTime.Now;
+                user.Comment = dto.Comment;
+                user.UpdatedOn = DateTime.Now;
                 user.UpdatedBy = dto.UpdatedBy;
 
                 this.db.SaveChanges();
@@ -635,8 +638,8 @@
 
         public bool UpdateUserBirthday(string email, DateTime birthday)
         {
-            var user = this.db.Users.FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Email.Trim()==email.Trim());
-            if (user!=null)
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+            if (user != null)
             {
                 user.Birthday = birthday;
                 this.db.SaveChanges();
@@ -688,7 +691,7 @@
         public bool UpdateUserPhone(string email, string oldPhone, string newPhone)
         {
             int userId = this.GetUserIdByEmail(email);
-            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId==userId && x.Telephone.Trim()==oldPhone.Trim());
+            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId == userId && x.Telephone.Trim() == oldPhone.Trim());
             if (phone != null)
             {
                 phone.Telephone = newPhone.Trim();
@@ -697,6 +700,59 @@
                 return true;
             }
             return false;
+        }
+
+        public bool SetPasswordResetInfo(string email, string token)
+        {
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+            if (user != null)
+            {
+                user.PasswordResetToken = token.Trim();
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
+
+        public void ChangeUserActivation(bool activation, string email, int lastUpdatedBy)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public List<UserDto> GetTopXByPoint(int count)
+        {
+            //var users = this.db.Users
+            //    .Include(x => x.Point)
+            //    .Where(x => x.DeletedOn.HasValue == false).OrderBy(x=>x.Point);
+
+            return null;
+        }
+
+        //public bool UpdateUserPoint(PointHistoryDto pointHistory)
+        //{
+        //    //var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+        //    //if (user != null)
+        //    //{
+        //    //    user.Point = user.Point + pointHistory.Point;
+        //    //    this.db.PointHistories.Add(new PointHistory
+        //    //    {
+        //    //        CreatedOn=DateTime.Now,
+        //    //        UpdatedBy=pointHistory.UpdatedBy,
+        //    //        Point=pointHistory.Point,
+        //    //        PointType=pointHistory.PointType.Id
+                    
+                    
+        //    //    });
+        //    //}
+        //    return false;
+        //}
+
+
+        public bool UpdateUserPoint(string email, bool isIncrease, int point)
+        {
+            throw new NotImplementedException();
         }
     }
 }

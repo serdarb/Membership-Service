@@ -77,7 +77,7 @@ namespace Membership.Contract
         AddressDto GetAddressById(int id);
 
         [OperationContract]
-        bool Update(UserDto dto);
+        bool UpdateUser(UserDto dto);
 
         [OperationContract]
         bool UpdateUserBirthday(string email, DateTime birthday);
@@ -94,6 +94,17 @@ namespace Membership.Contract
         [OperationContract]
         bool UpdateUserPhone(string email, string oldPhone, string newPhone);
 
+        [OperationContract]
+        bool SetPasswordResetInfo(string email, string token);
+
+        [OperationContract]
+        List<UserDto> GetTopXByPoint(int count);
+
+        [OperationContract]
+        bool UpdateUserPoint(string email, bool isIncrease, int point);
+
+        [OperationContract]
+        void ChangeUserActivation(bool activation, string email, int lastUpdatedBy);
 
     }
 }
