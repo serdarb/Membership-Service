@@ -11,6 +11,9 @@ namespace Membership.Contract
         public string AddressText { get; set; }
 
         [DataMember]
+        public string AddressType { get; set; }
+
+        [DataMember]
         public string District { get; set; }
 
         [DataMember]

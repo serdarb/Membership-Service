@@ -1,5 +1,6 @@
 ﻿using System.ServiceModel;
 using System.Collections.Generic;
+using System;
 
 namespace Membership.Contract
 {
@@ -74,5 +75,25 @@ namespace Membership.Contract
 
         [OperationContract]
         AddressDto GetAddressById(int id);
+
+        [OperationContract]
+        bool Update(UserDto dto);
+
+        [OperationContract]
+        bool UpdateUserBirthday(string email, DateTime birthday);
+
+        [OperationContract]
+        bool UpdateUserEmail(string oldEmail, string newEmail);
+
+        [OperationContract]
+        bool UpdateUserNames(string email, string newNames);
+
+        [OperationContract]
+        bool UpdateUserPassword(string email, string newPassword);
+
+        [OperationContract]
+        bool UpdateUserPhone(string email, string oldPhone, string newPhone);
+
+
     }
 }

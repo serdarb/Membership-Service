@@ -593,5 +593,110 @@
             return null;
 
         }
+
+
+        public bool Update(UserDto dto)
+        {
+            var user = this.db.Users.FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Id==dto.Id);
+            if (user!=null)
+            {
+                user.AffiliateSlug=dto.AffiliateSlug;
+                user.Birthday=dto.Birthday;
+                user.Email = dto.Email;
+                user.FacebookId = dto.FacebookId;
+                user.FirstName = dto.FirstName;
+                user.GenderId = dto.Gender.Id;
+                user.IdentityNumber = dto.IdentityNumber;
+                user.IsActive = dto.IsActive;
+                user.IsMailingActive = dto.IsMailingActive;
+                user.IsOtherMailingActive = dto.IsOtherMailingActive;
+                user.LastInvoiceAddressId = dto.LastInvoiceAddressId;
+                user.LastName = dto.LastName;
+                user.LastShippingAddressId = dto.LastShippingAddressId;
+                user.Names = dto.Names;
+                user.PasswordHash = dto.PasswordHash;
+                user.PhotoUrl = dto.PhotoUrl;
+                user.PinterestId = dto.PinterestId;
+                user.Point = dto.Point;
+                user.PreferredName = dto.PreferredName;
+                user.RefererSource = dto.RefererSource;
+                user.Website = dto.Website;
+
+                user.Comment=dto.Comment;
+                user.UpdatedOn=DateTime.Now;
+                user.UpdatedBy = dto.UpdatedBy;
+
+                this.db.SaveChanges();
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool UpdateUserBirthday(string email, DateTime birthday)
+        {
+            var user = this.db.Users.FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Email.Trim()==email.Trim());
+            if (user!=null)
+            {
+                user.Birthday = birthday;
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateUserEmail(string oldEmail, string newEmail)
+        {
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == oldEmail.Trim());
+            if (user != null)
+            {
+                user.Email = newEmail;
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateUserNames(string email, string newNames)
+        {
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+            if (user != null)
+            {
+                user.Names = newNames;
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateUserPassword(string email, string newPassword)
+        {
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
+            if (user != null)
+            {
+                user.PasswordHash = newPassword;
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateUserPhone(string email, string oldPhone, string newPhone)
+        {
+            int userId = this.GetUserIdByEmail(email);
+            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId==userId && x.Telephone.Trim()==oldPhone.Trim());
+            if (phone != null)
+            {
+                phone.Telephone = newPhone.Trim();
+                this.db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -8,6 +8,8 @@ namespace Membership.Data.Entity
         public string Name { get; set; }
         public string AddressText { get; set; }
 
+        public string AddressType { get; set; }
+
         public string District { get; set; }
 
         public County County { get; set; }
