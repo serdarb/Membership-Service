@@ -33,41 +33,56 @@
             int firstTake = userCount / 2;
             int secondTake = userCount - firstTake;
 
-            var userLoginTask = new Task(() =>
-            {
-                var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
-                foreach (var user in userLogin)
-                {
-                    this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
-                }
-            });
-            userLoginTask.Start();
 
-            var usersTask1 = new Task(() =>
+            var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
+            foreach (var user in userLogin)
             {
-                var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Take(firstTake);
-                foreach (var user in users)
-                {
-                    var dto = Mapper.Map<User, UserDto>(user);
-                    UserDictionary.TryAdd(user.Email, dto);
-                    UserByIdDictionary.TryAdd(user.Id, dto);
-                }
-            });
-            usersTask1.Start();
+                this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
+            }
 
-            var usersTask2 = new Task(() =>
+            var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id);
+            foreach (var user in users)
             {
-                var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Skip(firstTake).Take(secondTake);
-                foreach (var user in users)
-                {
-                    var dto = Mapper.Map<User, UserDto>(user);
-                    UserDictionary.TryAdd(user.Email, dto);
-                    UserByIdDictionary.TryAdd(user.Id, dto);
-                }
-            });
-            usersTask2.Start();
+                var dto = Mapper.Map<User, UserDto>(user);
+                UserDictionary.TryAdd(user.Email, dto);
+                UserByIdDictionary.TryAdd(user.Id, dto);
+            }
 
-            Task.WaitAll(userLoginTask, usersTask1, usersTask2);
+            //var userLoginTask = new Task(() =>
+            //{
+            //    var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
+            //    foreach (var user in userLogin)
+            //    {
+            //        this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
+            //    }
+            //});
+            //userLoginTask.Start();
+
+            //var usersTask1 = new Task(() =>
+            //{
+            //    var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Take(firstTake);
+            //    foreach (var user in users)
+            //    {
+            //        var dto = Mapper.Map<User, UserDto>(user);
+            //        UserDictionary.TryAdd(user.Email, dto);
+            //        UserByIdDictionary.TryAdd(user.Id, dto);
+            //    }
+            //});
+            //usersTask1.Start();
+
+            //var usersTask2 = new Task(() =>
+            //{
+            //    var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Skip(firstTake).Take(secondTake);
+            //    foreach (var user in users)
+            //    {
+            //        var dto = Mapper.Map<User, UserDto>(user);
+            //        UserDictionary.TryAdd(user.Email, dto);
+            //        UserByIdDictionary.TryAdd(user.Id, dto);
+            //    }
+            //});
+            //usersTask2.Start();
+
+            //Task.WaitAll(userLoginTask, usersTask1, usersTask2);
         }
 
         /// <summary>
@@ -630,6 +645,12 @@
                 user.UpdatedBy = dto.UpdatedBy;
 
                 this.db.SaveChanges();
+
+                this.UserLoginDictionary.AddOrUpdate(user.Email, user.PasswordHash, (k, v) =>  user.PasswordHash);
+
+                var userDto = Mapper.Map<User, UserDto>(user);
+                this.UserDictionary.AddOrUpdate(user.Email, userDto, (k, v) =>  userDto);
+
                 return true;
             }
 
@@ -735,10 +756,10 @@
         public PointTableDto GetTopXByPointWithUser(int count, string email)
         {
             var result = new PointTableDto();
-            var users = this.UserDictionary.OrderBy(x => x.Value.Point).Take(count).ToList();                     
+            var users = this.UserDictionary.OrderBy(x => x.Value.Point).Take(count).ToList();
             if (users != null)
             {
-                result.TopList = new List<UserDto>();               
+                result.TopList = new List<UserDto>();
 
                 var usersOrder = 0;
                 foreach (var user in users)
@@ -749,15 +770,15 @@
                         usersOrder++;
                         result.IsUserInTop = true;
                         result.AskingUser = user.Value;
-                        result.AskingUsersOrder = usersOrder;                      
-                    }             
+                        result.AskingUsersOrder = usersOrder;
+                    }
                 }
 
                 if (!result.IsUserInTop)
                 {
                     usersOrder = 0;
                     var allUsers = this.UserDictionary.OrderBy(x => x.Value.Point);
-                    
+
                     foreach (var item in allUsers)
                     {
                         usersOrder++;
@@ -768,9 +789,9 @@
                             result.AskingUser = item.Value;
                             result.AskingUsersOrder = usersOrder;
                             break;
-                        }                        
+                        }
                     }
-                }                
+                }
             }
 
             return result;
@@ -806,6 +827,6 @@
         }
 
 
-        
+
     }
 }
