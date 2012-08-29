@@ -95,16 +95,10 @@ namespace Membership.Contract
         bool UpdateUserPhone(string email, string oldPhone, string newPhone);
 
         [OperationContract]
-        bool SetPasswordResetInfo(string email, string token);
-
-        [OperationContract]
         List<UserDto> GetTopXByPoint(int count);
 
         [OperationContract]
-        bool UpdateUserPoint(string email, bool isIncrease, int point);
-
-        [OperationContract]
-        void ChangeUserActivation(bool activation, string email, int lastUpdatedBy);
+        bool UpdateUserPoint(PointHistoryDto dto);
 
     }
 }

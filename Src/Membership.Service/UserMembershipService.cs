@@ -702,12 +702,44 @@
             return false;
         }
 
-        public bool SetPasswordResetInfo(string email, string token)
+        public List<UserDto> GetTopXByPoint(int count)
         {
-            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
-            if (user != null)
+            var users = this.db.Users
+                .Include(x => x.Point)
+                .Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Point).Take(count);
+
+            var dtos=new List<UserDto>();
+
+            if (users!=null)
             {
-                user.PasswordResetToken = token.Trim();
+                foreach (var user in users)
+                {
+                    dtos.Add(Mapper.Map<User,UserDto>(user));
+                }
+                return dtos;
+            }
+
+            return null;
+        }
+
+        public bool UpdateUserPoint(PointHistoryDto dto)
+        {
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id==dto.User.Id);
+            if (user != null)
+            {                
+                this.db.PointHistories.Add(new PointHistory
+                {
+                    CreatedOn = DateTime.Now,
+                    UpdatedBy = dto.UpdatedBy,
+                    Comment=dto.Comment,
+
+                    Point = dto.Point,
+                    PointTypeId =dto.PointType.Id,
+                    Expression=dto.Expression              
+
+                });
+
+                user.Point = user.Point + dto.Point;
                 this.db.SaveChanges();
 
                 return true;
@@ -715,44 +747,5 @@
             return false;
         }
 
-        public void ChangeUserActivation(bool activation, string email, int lastUpdatedBy)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public List<UserDto> GetTopXByPoint(int count)
-        {
-            //var users = this.db.Users
-            //    .Include(x => x.Point)
-            //    .Where(x => x.DeletedOn.HasValue == false).OrderBy(x=>x.Point);
-
-            return null;
-        }
-
-        //public bool UpdateUserPoint(PointHistoryDto pointHistory)
-        //{
-        //    //var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email.Trim() == email.Trim());
-        //    //if (user != null)
-        //    //{
-        //    //    user.Point = user.Point + pointHistory.Point;
-        //    //    this.db.PointHistories.Add(new PointHistory
-        //    //    {
-        //    //        CreatedOn=DateTime.Now,
-        //    //        UpdatedBy=pointHistory.UpdatedBy,
-        //    //        Point=pointHistory.Point,
-        //    //        PointType=pointHistory.PointType.Id
-                    
-                    
-        //    //    });
-        //    //}
-        //    return false;
-        //}
-
-
-        public bool UpdateUserPoint(string email, bool isIncrease, int point)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

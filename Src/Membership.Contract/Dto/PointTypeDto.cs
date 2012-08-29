@@ -4,18 +4,19 @@
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class PointHistoryDto : BaseDto
+    public class PointTypeDto : BaseDto
     {
         [DataMember]
-        public UserDto User { get; set; }
+        public string Name { get; set; }
 
         [DataMember]
-        public PointTypeDto PointType { get; set; }
+        public string Description { get; set; }
 
         [DataMember]
         public int Point { get; set; }
 
         [DataMember]
-        public string Expression { get; set; }
+        public bool IsActive { get; set; }
+
     }
 }
