@@ -504,7 +504,7 @@
 
         public bool DeletePhone(PhoneDto dto)
         {
-            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id && x.Telephone.Trim() == dto.Telephone.Trim());
+            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId == dto.Id && x.Telephone.Trim() == dto.Telephone.Trim());
             if (phone != null)
             {
                 phone.DeletedOn = DateTime.Now;
@@ -705,7 +705,6 @@
         public List<UserDto> GetTopXByPoint(int count)
         {
             var users = this.db.Users
-                .Include(x => x.Point)
                 .Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Point).Take(count);
 
             var dtos=new List<UserDto>();
@@ -739,7 +738,11 @@
 
                 });
 
-                user.Point = user.Point + dto.Point;
+                user.Point += dto.Point;
+
+                UserByIdDictionary[dto.User.Id].Point = user.Point;
+                UserDictionary[user.Email].Point = user.Point;
+
                 this.db.SaveChanges();
 
                 return true;
