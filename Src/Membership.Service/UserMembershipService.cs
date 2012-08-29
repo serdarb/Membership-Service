@@ -504,7 +504,7 @@
 
         public bool DeletePhone(PhoneDto dto)
         {
-            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId == dto.Id && x.Telephone.Trim() == dto.Telephone.Trim());
+            var phone = this.db.Phones.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id && x.Telephone.Trim() == dto.Telephone.Trim());
             if (phone != null)
             {
                 phone.DeletedOn = DateTime.Now;
@@ -623,7 +623,7 @@
                 user.TwitterId = dto.TwitterId;
                 user.VirtualMoney = dto.VirtualMoney;
                 user.UserTypeId = dto.UserType.Id;
-                user.SkypeId = string.Empty;
+                user.SkypeId = dto.SkypeId;
 
                 user.Comment = dto.Comment;
                 user.UpdatedOn = DateTime.Now;
@@ -804,7 +804,6 @@
             }
             return false;
         }
-
 
 
         

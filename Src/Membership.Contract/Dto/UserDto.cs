@@ -67,5 +67,8 @@ namespace Membership.Contract
         [DataMember]
         public string PinterestId { get; set; }
 
+        [DataMember]
+        public string SkypeId { get; set; }
+
     }
 }
