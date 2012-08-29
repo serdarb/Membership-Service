@@ -98,6 +98,9 @@ namespace Membership.Contract
         List<UserDto> GetTopXByPoint(int count);
 
         [OperationContract]
+        PointTableDto GetTopXByPointWithUser(int count, string email);
+
+        [OperationContract]
         bool UpdateUserPoint(PointHistoryDto dto);
 
     }

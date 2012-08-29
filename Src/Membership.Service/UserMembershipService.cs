@@ -702,18 +702,23 @@
             return false;
         }
 
+        /// <summary>
+        /// Gets from db.
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public List<UserDto> GetTopXByPoint(int count)
         {
             var users = this.db.Users
                 .Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Point).Take(count);
 
-            var dtos=new List<UserDto>();
+            var dtos = new List<UserDto>();
 
-            if (users!=null)
+            if (users != null)
             {
                 foreach (var user in users)
                 {
-                    dtos.Add(Mapper.Map<User,UserDto>(user));
+                    dtos.Add(Mapper.Map<User, UserDto>(user));
                 }
                 return dtos;
             }
@@ -721,20 +726,70 @@
             return null;
         }
 
+        /// <summary>
+        /// Gets from Dictionary Cache.
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public PointTableDto GetTopXByPointWithUser(int count, string email)
+        {
+            var result = new PointTableDto();
+            var users = this.UserDictionary.OrderBy(x => x.Value.Point).Take(count).ToList();                     
+            if (users != null)
+            {
+                result.TopList = new List<UserDto>();               
+
+                var usersOrder = 0;
+                foreach (var user in users)
+                {
+                    result.TopList.Add(user.Value);
+                    if (user.Value.Email == email.Trim())
+                    {
+                        usersOrder++;
+                        result.IsUserInTop = true;
+                        result.AskingUser = user.Value;
+                        result.AskingUsersOrder = usersOrder;                      
+                    }             
+                }
+
+                if (!result.IsUserInTop)
+                {
+                    usersOrder = 0;
+                    var allUsers = this.UserDictionary.OrderBy(x => x.Value.Point);
+                    
+                    foreach (var item in allUsers)
+                    {
+                        usersOrder++;
+                        if (item.Value.Email == email.Trim())
+                        {
+                            usersOrder++;
+                            result.IsUserInTop = true;
+                            result.AskingUser = item.Value;
+                            result.AskingUsersOrder = usersOrder;
+                            break;
+                        }                        
+                    }
+                }                
+            }
+
+            return result;
+        }
+
         public bool UpdateUserPoint(PointHistoryDto dto)
         {
-            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id==dto.User.Id);
+            var user = this.db.Users.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.User.Id);
             if (user != null)
-            {                
+            {
                 this.db.PointHistories.Add(new PointHistory
                 {
                     CreatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
-                    Comment=dto.Comment,
+                    Comment = dto.Comment,
 
                     Point = dto.Point,
-                    PointTypeId =dto.PointType.Id,
-                    Expression=dto.Expression              
+                    PointTypeId = dto.PointType.Id,
+                    Expression = dto.Expression
 
                 });
 
@@ -750,5 +805,8 @@
             return false;
         }
 
+
+
+        
     }
 }

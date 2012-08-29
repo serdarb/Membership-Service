@@ -42,6 +42,7 @@
     <Compile Include="Dto\AdminMenuItemRoleDto.cs" />
     <Compile Include="Dto\AdminRoleDto.cs" />
     <Compile Include="Dto\AffiliateDto.cs" />
+    <Compile Include="Dto\PointTableDto.cs" />
     <Compile Include="Dto\EmployeeAdminRoleDto.cs" />
     <Compile Include="Dto\LogDto.cs" />
     <Compile Include="Dto\LogEventDto.cs" />
