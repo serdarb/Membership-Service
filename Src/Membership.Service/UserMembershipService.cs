@@ -318,6 +318,7 @@
                     {
                         Name = dto.Name,
                         AddressText = dto.AddressText,
+                        AddressType=dto.AddressType,
                         District = dto.District,
                         CountyId = dto.County.Id,
                         CityId = dto.City.Id,

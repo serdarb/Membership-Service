@@ -128,6 +128,9 @@ namespace Membership.Contract
         [OperationContract]
         bool DeleteGeoZone(GeoZoneDto dto);
 
+        [OperationContract]
+        int GetGeoZoneIdByCityId(int id);
+
 
         [OperationContract]
         List<LogDto> GetLogs();

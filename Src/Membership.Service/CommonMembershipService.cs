@@ -667,6 +667,20 @@ namespace Membership.Service
             return false;
         }
 
+        public int GetGeoZoneIdByCityId(int id)
+        {
+            var geoZone = this.db.Cities
+                .Include(x => x.GeoZone)
+                .Select(x => x.GeoZone)
+                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == id);                
+
+            if (geoZone!=null)
+            {
+                return geoZone.Id;
+            }
+            return 0;
+        }
+
         #endregion
 
         #region Log
