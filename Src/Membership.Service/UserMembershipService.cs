@@ -310,27 +310,24 @@
         /// </returns>
         /// <exception cref="NotImplementedException">
         /// </exception>
-        public bool AddAddress(AddressDto dto)
+        public int AddAddress(AddressDto dto)
         {
             if (!this.db.Addresses.Any(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id && x.Name.Trim() == dto.Name.Trim()))
             {
                 this.db.Addresses.Add(new Address
                     {
-                        Name = dto.Name,
-                        AddressText = dto.AddressText,
-                        AddressType=dto.AddressType,
-                        District = dto.District,
+                        Name = dto.Name.Trim(),
+                        AddressText = dto.AddressText.Trim(),
+                        AddressType = dto.AddressType.Trim(),
+                        //District = dto.District.Trim(),
                         CountyId = dto.County.Id,
                         CityId = dto.City.Id,
-                        GeoZoneId = dto.GeoZone.Id,
-                        CountryId = dto.Country.Id,
-                        PostalCode = dto.PostalCode,
-                        Coordinates = dto.Coordinates,
-                        PersonName = dto.PersonName,
-                        PrimaryPhone = dto.PrimaryPhone,
-                        CompanyName = dto.CompanyName,
-                        TaxNumber = dto.TaxNumber,
-                        TaxOffice = dto.TaxOffice,
+                        PostalCode = dto.PostalCode.Trim(),
+                        PersonName = dto.PersonName.Trim(),
+                        PrimaryPhone = dto.PrimaryPhone.Trim(),
+                        CompanyName = dto.CompanyName.Trim(),
+                        TaxNumber = dto.TaxNumber.Trim(),
+                        TaxOffice = dto.TaxOffice.Trim(),
                         IsApproved = dto.IsApproved,
                         IsCompany = dto.IsCompany,
                         UserId = dto.User.Id,
@@ -340,10 +337,12 @@
                         Comment = dto.Comment
                     });
                 this.db.SaveChanges();
-                return true;
+
+                var topAddress = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Name == dto.Name.Trim() && x.UserId == dto.User.Id);
+                return topAddress.Id;
             }
 
-            return false;
+            return 0;
         }
 
         public bool AddPhone(PhoneDto dto)
@@ -456,10 +455,8 @@
                 address.District = dto.District;
                 address.CountyId = dto.County.Id;
                 address.CityId = dto.City.Id;
-                address.CountryId = dto.Country.Id;
                 address.PostalCode = dto.PostalCode;
                 address.CompanyName = dto.CompanyName;
-                address.Coordinates = dto.Coordinates;
                 address.PersonName = dto.PersonName;
                 address.PrimaryPhone = dto.PrimaryPhone;
                 address.TaxNumber = dto.TaxNumber;
@@ -503,7 +500,7 @@
 
         public bool DeleteAddress(AddressDto dto)
         {
-            var address = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id && x.Name.Trim() == dto.Name.Trim());
+            var address = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
             if (address != null)
             {
                 address.DeletedOn = DateTime.Now;
@@ -562,11 +559,12 @@
 
         public List<AddressDto> GetAddresses(string email)
         {
-            int id = GetUserIdByEmail(email);
-            var addresses = this.db.Addresses.Include(x => x.User)
+            int userId = GetUserIdByEmail(email);
+            var addresses = this.db.Addresses
+                        .Include(x => x.User)
                         .Include(x => x.County)
                         .Include(x => x.City)
-                        .Where(x => x.DeletedOn.HasValue == false && x.Id == id);
+                        .Where(x => x.DeletedOn.HasValue == false && x.UserId == userId);
 
             var dtos = new List<AddressDto>();
             foreach (var address in addresses)
@@ -647,10 +645,10 @@
 
                 this.db.SaveChanges();
 
-                this.UserLoginDictionary.AddOrUpdate(user.Email, user.PasswordHash, (k, v) =>  user.PasswordHash);
+                this.UserLoginDictionary.AddOrUpdate(user.Email, user.PasswordHash, (k, v) => user.PasswordHash);
 
                 var userDto = Mapper.Map<User, UserDto>(user);
-                this.UserDictionary.AddOrUpdate(user.Email, userDto, (k, v) =>  userDto);
+                this.UserDictionary.AddOrUpdate(user.Email, userDto, (k, v) => userDto);
 
                 return true;
             }

@@ -44,7 +44,7 @@ namespace Membership.Contract
         bool InviteUser(string refererUserEmail, string invitedEmail);
 
         [OperationContract]
-        bool AddAddress(AddressDto dto);
+        int AddAddress(AddressDto dto);
 
         [OperationContract]
         bool AddPhone(PhoneDto dto);

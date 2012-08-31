@@ -82,6 +82,20 @@ namespace Membership.Service
             return false;
         }
 
+        public int GetCountryIdByGeoZoneId(int Id)
+        {
+            var geoZone = this.db.GeoZones
+                .Include(x => x.Country)
+                .FirstOrDefault(x=>x.DeletedOn.HasValue==false && x.Id==Id);
+
+            if (geoZone!=null)
+            {
+                return geoZone.Country.Id;
+            }
+
+            return 0;
+        }
+
         #endregion
 
         #region City
@@ -221,6 +235,19 @@ namespace Membership.Service
                 return true;
             }
             return false; ;
+        }
+
+        public List<CountyDto> GetCountiesByCityId(int Id)
+        {
+            var counties = this.db.Counties.Where(x => x.DeletedOn.HasValue == false && x.CityId==Id);
+            var dtos = new List<CountyDto>();
+
+            foreach (var county in counties)
+            {
+                dtos.Add(Mapper.Map<County, CountyDto>(county));
+            }
+
+            return dtos;
         }
 
         #endregion
@@ -669,14 +696,13 @@ namespace Membership.Service
 
         public int GetGeoZoneIdByCityId(int id)
         {
-            var geoZone = this.db.Cities
+            var city = this.db.Cities
                 .Include(x => x.GeoZone)
-                .Select(x => x.GeoZone)
-                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == id);                
+                .FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == id);
 
-            if (geoZone!=null)
+            if (city != null)
             {
-                return geoZone.Id;
+                return city.GeoZone.Id;
             }
             return 0;
         }
@@ -881,6 +907,7 @@ namespace Membership.Service
         }
 
         #endregion
+
 
     }
 }

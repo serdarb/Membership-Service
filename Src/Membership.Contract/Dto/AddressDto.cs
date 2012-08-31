@@ -23,12 +23,6 @@ namespace Membership.Contract
         public CityDto City { get; set; }
 
         [DataMember]
-        public GeoZoneDto GeoZone { get; set; }
-
-        [DataMember]
-        public CountryDto Country { get; set; }
-
-        [DataMember]
         public string PostalCode { get; set; }
         [DataMember]
         public string Coordinates { get; set; }

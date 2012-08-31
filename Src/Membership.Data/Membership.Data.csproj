@@ -104,6 +104,10 @@
     <Compile Include="Migrations\201208281113285_addressTypeUpdate.Designer.cs">
       <DependentUpon>201208281113285_addressTypeUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201208311145030_addressGeoZoneFix.cs" />
+    <Compile Include="Migrations\201208311145030_addressGeoZoneFix.Designer.cs">
+      <DependentUpon>201208311145030_addressGeoZoneFix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

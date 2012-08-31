@@ -18,12 +18,6 @@ namespace Membership.Data.Entity
         public City City { get; set; }
         public int? CityId { get; set; }
 
-        public GeoZone GeoZone { get; set; }
-        public int? GeoZoneId { get; set; }
-
-        public Country Country { get; set; }
-        public int? CountryId { get; set; }
-
         public string PostalCode { get; set; }
 
         public string Coordinates { get; set; }

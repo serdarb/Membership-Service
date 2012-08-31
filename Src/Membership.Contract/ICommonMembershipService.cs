@@ -21,6 +21,9 @@ namespace Membership.Contract
         [OperationContract]
         bool DeleteCountry(CountryDto country);
 
+        [OperationContract]
+        int GetCountryIdByGeoZoneId(int Id);
+
 
         [OperationContract]
         List<CityDto> GetCities();
@@ -46,6 +49,9 @@ namespace Membership.Contract
 
         [OperationContract]
         bool DeleteCounty(CountyDto dto);
+
+        [OperationContract]
+        List<CountyDto> GetCountiesByCityId(int Id);
 
 
         [OperationContract]

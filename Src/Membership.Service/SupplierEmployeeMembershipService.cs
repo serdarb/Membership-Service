@@ -166,8 +166,6 @@
                     District = dto.District,
                     CountyId = dto.County.Id,
                     CityId = dto.City.Id,
-                    GeoZoneId = dto.GeoZone.Id,
-                    CountryId = dto.Country.Id,
                     PostalCode = dto.PostalCode,
                     Coordinates = dto.Coordinates,
                     PersonName = dto.PersonName,
