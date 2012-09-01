@@ -22,17 +22,11 @@
         private ConcurrentDictionary<string, UserDto> UserDictionary { get; set; }
         private ConcurrentDictionary<int, UserDto> UserByIdDictionary { get; set; }
 
-
         public UserMembershipService()
         {
             this.UserDictionary = new ConcurrentDictionary<string, UserDto>();
             this.UserLoginDictionary = new ConcurrentDictionary<string, string>();
-            this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();
-
-            int userCount = this.db.Users.Count(x => x.DeletedOn.HasValue == false);
-            int firstTake = userCount / 2;
-            int secondTake = userCount - firstTake;
-
+            this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();        
 
             var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
             foreach (var user in userLogin)
@@ -46,43 +40,7 @@
                 var dto = Mapper.Map<User, UserDto>(user);
                 UserDictionary.TryAdd(user.Email, dto);
                 UserByIdDictionary.TryAdd(user.Id, dto);
-            }
-
-            //var userLoginTask = new Task(() =>
-            //{
-            //    var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
-            //    foreach (var user in userLogin)
-            //    {
-            //        this.UserLoginDictionary.TryAdd(user.Email, user.PasswordHash);
-            //    }
-            //});
-            //userLoginTask.Start();
-
-            //var usersTask1 = new Task(() =>
-            //{
-            //    var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Take(firstTake);
-            //    foreach (var user in users)
-            //    {
-            //        var dto = Mapper.Map<User, UserDto>(user);
-            //        UserDictionary.TryAdd(user.Email, dto);
-            //        UserByIdDictionary.TryAdd(user.Id, dto);
-            //    }
-            //});
-            //usersTask1.Start();
-
-            //var usersTask2 = new Task(() =>
-            //{
-            //    var users = this.db.Users.Include(x => x.UserType).Include(x => x.Gender).Where(x => x.DeletedOn.HasValue == false).OrderBy(x => x.Id).Skip(firstTake).Take(secondTake);
-            //    foreach (var user in users)
-            //    {
-            //        var dto = Mapper.Map<User, UserDto>(user);
-            //        UserDictionary.TryAdd(user.Email, dto);
-            //        UserByIdDictionary.TryAdd(user.Id, dto);
-            //    }
-            //});
-            //usersTask2.Start();
-
-            //Task.WaitAll(userLoginTask, usersTask1, usersTask2);
+            }            
         }
 
         /// <summary>
@@ -385,6 +343,25 @@
                     this.db.SaveChanges();
 
                     //todo: send invite email
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool InviteSucceeded(string refererUserEmail, string invitedEmail)
+        {
+            if (this.DoesUserEmailExists(refererUserEmail))
+            {
+                var affliate = this.db.Affiliates.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Email == invitedEmail && x.RefererSource == refererUserEmail);
+                if (affliate != null)
+                {
+                    affliate.UpdatedOn = DateTime.Now;
+                    affliate.ActivatedOn = DateTime.Now;
+
+                    this.db.SaveChanges();
 
                     return true;
                 }
