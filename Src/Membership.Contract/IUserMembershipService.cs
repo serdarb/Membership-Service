@@ -106,5 +106,9 @@ namespace Membership.Contract
         [OperationContract]
         bool UpdateUserPoint(PointHistoryDto dto);
 
+        [OperationContract]
+        UserDto GetUserByFacebookId(string fid);
+
+
     }
 }

@@ -802,6 +802,15 @@
             return false;
         }
 
+        public UserDto GetUserByFacebookId(string fid)
+        {
+            UserDto user = null;
+            var userDtoValues = this.UserDictionary.FirstOrDefault(x => x.Value.FacebookId == fid.Trim());
+            user = userDtoValues.Value;
+            return user;
+        }
+
+
 
 
     }
