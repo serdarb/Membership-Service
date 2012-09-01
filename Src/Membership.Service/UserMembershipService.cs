@@ -26,7 +26,7 @@
         {
             this.UserDictionary = new ConcurrentDictionary<string, UserDto>();
             this.UserLoginDictionary = new ConcurrentDictionary<string, string>();
-            this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();        
+            this.UserByIdDictionary = new ConcurrentDictionary<int, UserDto>();
 
             var userLogin = this.db.Users.Where(x => x.DeletedOn.HasValue == false).Select(user => new { user.Email, user.PasswordHash });
             foreach (var user in userLogin)
@@ -40,7 +40,7 @@
                 var dto = Mapper.Map<User, UserDto>(user);
                 UserDictionary.TryAdd(user.Email, dto);
                 UserByIdDictionary.TryAdd(user.Id, dto);
-            }            
+            }
         }
 
         /// <summary>
@@ -423,26 +423,26 @@
 
         public bool UpdateAddress(AddressDto dto)
         {
-            var address = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.User.Id && x.Name.Trim() == dto.Name.Trim());
+            var address = this.db.Addresses.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.UserId == dto.User.Id && x.Id == dto.Id);
 
             if (address != null)
             {
-                address.Name = dto.Name;
-                address.AddressText = dto.AddressText;
-                address.District = dto.District;
+                address.Name = dto.Name.Trim();
+                address.AddressText = dto.AddressText.Trim();
+                address.AddressType = dto.AddressType.Trim();
                 address.CountyId = dto.County.Id;
                 address.CityId = dto.City.Id;
-                address.PostalCode = dto.PostalCode;
-                address.CompanyName = dto.CompanyName;
-                address.PersonName = dto.PersonName;
-                address.PrimaryPhone = dto.PrimaryPhone;
-                address.TaxNumber = dto.TaxNumber;
-                address.TaxOffice = dto.TaxOffice;
+                address.PostalCode = dto.PostalCode.Trim();
+                address.PersonName = dto.PersonName.Trim();
+                address.PrimaryPhone = dto.PrimaryPhone.Trim();
+                address.CompanyName = dto.CompanyName.Trim();
+                address.TaxNumber = dto.TaxNumber.Trim();
+                address.TaxOffice = dto.TaxOffice.Trim();
                 address.IsApproved = dto.IsApproved;
                 address.IsCompany = dto.IsCompany;
-                address.Comment = dto.Comment;
                 address.UpdatedOn = DateTime.Now;
                 address.UpdatedBy = dto.UpdatedBy;
+                address.Comment = dto.Comment;
 
                 this.db.SaveChanges();
 
