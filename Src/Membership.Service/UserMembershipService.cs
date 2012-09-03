@@ -804,8 +804,12 @@
 
         public UserDto GetUserByFacebookId(string fid)
         {
-            var userDtoValues = this.UserDictionary.FirstOrDefault(x => x.Value.FacebookId == fid.Trim());
-            UserDto user  = userDtoValues.Value;
+            UserDto user = null;
+            var userData = this.UserDictionary.FirstOrDefault(x => x.Value.FacebookId == fid.Trim());
+            if (userData != null)
+            {
+                return userData.Value;
+            }
             return user;
         }
 
