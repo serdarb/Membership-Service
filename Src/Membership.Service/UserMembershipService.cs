@@ -804,17 +804,12 @@
 
         public UserDto GetUserByFacebookId(string fid)
         {
-            UserDto user = null;
-            var userData = this.UserDictionary.FirstOrDefault(x => x.Value.FacebookId == fid.Trim());
+            var userData = this.UserDictionary.Values.FirstOrDefault(x => x.FacebookId == fid.Trim());
             if (userData != null)
             {
-                return userData.Value;
+                return userData;
             }
-            return user;
+            return null;
         }
-
-
-
-
     }
 }
