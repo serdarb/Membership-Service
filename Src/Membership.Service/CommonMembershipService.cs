@@ -32,6 +32,7 @@ namespace Membership.Service
                 this.db.Countries.Add(new Country
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn=DateTime.Now,
                     UpdatedBy = country.UpdatedBy,
                     Comment = country.Comment,
 
@@ -69,7 +70,7 @@ namespace Membership.Service
 
         public bool DeleteCountry(CountryDto dto)
         {
-            var country = this.db.Countries.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Name.Trim() == dto.Name.Trim());
+            var country = this.db.Countries.FirstOrDefault(x => x.DeletedOn.HasValue == false && x.Id == dto.Id);
             if (country != null)
             {
                 country.DeletedOn = DateTime.Now;
@@ -102,7 +103,9 @@ namespace Membership.Service
 
         public List<CityDto> GetCities()
         {
-            var cities = this.db.Cities.Where(x => x.DeletedOn.HasValue == false);
+            var cities = this.db.Cities
+                .Include(x=>x.GeoZone)
+                .Where(x => x.DeletedOn.HasValue == false);
             var dtos = new List<CityDto>();
 
             foreach (var city in cities)
@@ -120,6 +123,7 @@ namespace Membership.Service
                 this.db.Cities.Add(new City
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn=DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -173,7 +177,9 @@ namespace Membership.Service
 
         public List<CountyDto> GetCounties()
         {
-            var counties = this.db.Counties.Where(x => x.DeletedOn.HasValue == false);
+            var counties = this.db.Counties
+                .Include(x=>x.City)
+                .Where(x => x.DeletedOn.HasValue == false);
             var dtos = new List<CountyDto>();
 
             foreach (var county in counties)
@@ -191,6 +197,7 @@ namespace Membership.Service
                 this.db.Counties.Add(new County
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn=DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -256,7 +263,9 @@ namespace Membership.Service
 
         public List<AdminMenuItemDto> GetAdminMenuItems()
         {
-            var adminMenuItems = this.db.AdminMenuItems.Include(x => x.ParentAdminMenuItem).Where(x => x.DeletedOn.HasValue == false);
+            var adminMenuItems = this.db.AdminMenuItems
+                    .Include(x => x.ParentAdminMenuItem)
+                    .Where(x => x.DeletedOn.HasValue == false);
             var dtos = new List<AdminMenuItemDto>();
 
             foreach (var adminMenuItem in adminMenuItems)
@@ -368,6 +377,7 @@ namespace Membership.Service
                 this.db.AdminMenuItemRoles.Add(new AdminMenuItemRole
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -391,7 +401,7 @@ namespace Membership.Service
                 adminMenuItemRole.Comment = dto.Comment;
 
                 adminMenuItemRole.AdminMenuItemId = dto.AdminMenuItem.Id;
-                adminMenuItemRole.AdminRoleId = dto.AdminMenuItem.Id;
+                adminMenuItemRole.AdminRoleId = dto.AdminRole.Id;
 
                 this.db.SaveChanges();
                 return true;
@@ -438,6 +448,7 @@ namespace Membership.Service
                 this.db.AdminRoles.Add(new AdminRole
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -490,7 +501,10 @@ namespace Membership.Service
 
         public List<EmployeeAdminRoleDto> GetEmployeeAdminRoles()
         {
-            var employeeAdminRoles = this.db.EmployeeAdminRoles.Where(x => x.DeletedOn.HasValue == false);
+            var employeeAdminRoles = this.db.EmployeeAdminRoles
+                .Include(x=>x.Employee)
+                .Include(x=>x.AdminRole)
+                .Where(x => x.DeletedOn.HasValue == false);
             var dtos = new List<EmployeeAdminRoleDto>();
 
             foreach (var employeeAdminRole in employeeAdminRoles)
@@ -508,6 +522,7 @@ namespace Membership.Service
                 this.db.EmployeeAdminRoles.Add(new EmployeeAdminRole
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -578,6 +593,7 @@ namespace Membership.Service
                 this.db.Genders.Add(new Gender
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -630,7 +646,9 @@ namespace Membership.Service
 
         public List<GeoZoneDto> GetGeoZones()
         {
-            var geoZones = this.db.GeoZones.Where(x => x.DeletedOn.HasValue == false);
+            var geoZones = this.db.GeoZones
+                .Include(x=>x.Country)
+                .Where(x => x.DeletedOn.HasValue == false);
             var dtos = new List<GeoZoneDto>();
 
             foreach (var geoZone in geoZones)
@@ -648,6 +666,7 @@ namespace Membership.Service
                 this.db.GeoZones.Add(new GeoZone
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -731,6 +750,7 @@ namespace Membership.Service
                 this.db.Logs.Add(new Log
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -790,6 +810,7 @@ namespace Membership.Service
                 this.db.LogEvents.Add(new LogEvent
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn = DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
@@ -860,6 +881,7 @@ namespace Membership.Service
                 this.db.UserTypes.Add(new UserType
                 {
                     CreatedOn = DateTime.Now,
+                    UpdatedOn=DateTime.Now,
                     UpdatedBy = dto.UpdatedBy,
                     Comment = dto.Comment,
 
